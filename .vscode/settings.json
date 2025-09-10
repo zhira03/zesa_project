@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./zesa_project_final/src/zesa_project_final",
+        "./zesa_project_final/src/zesa_project_final"
+    ]
+}
