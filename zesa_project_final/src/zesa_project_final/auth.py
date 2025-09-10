@@ -23,8 +23,8 @@ ALGORITHM = "RS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
 
-PRIVATE_KEY_PATH = os.getenv("PRIVATE_KEY_PATH")
-PUBLIC_KEY_PATH = os.getenv("PUBLIC_KEY_PATH")
+PRIVATE_KEY_PATH = os.getenv("PRIVATE_KEY_PATH", "keys/private-key.pem")
+PUBLIC_KEY_PATH = os.getenv("PUBLIC_KEY_PATH", "keys/public-key.pem")
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

@@ -5,11 +5,11 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-localTestDb = "postgresql://postgres:newpassword@localhost:5432/localDB1"
+localTestDb1 = "postgresql://postgres:newpassword@localhost:5432/localDB1"
 localTestDb2 = "postgresql://postgres:newpassword@localhost:5432/localDB2"
 localTestDb3= "postgresql://postgres:newpassword@localhost:5432/localDB3"
 
-engine = create_engine(localTestDb3)
+engine = create_engine(localTestDb1)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
