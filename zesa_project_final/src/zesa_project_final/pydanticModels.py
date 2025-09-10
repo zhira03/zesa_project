@@ -108,3 +108,43 @@ class UserInfo(BaseModel):
     class Config:
         orm_mode = True
 
+class EnergyDataCreate(BaseModel):
+    user_id: uuid.UUID
+    timestamp: datetime
+    generation_kwh: float
+    consumption_kwh: float
+
+    class Config:
+        orm_mode = True
+
+class EnergyDataResponse(BaseModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    timestamp: datetime
+    generation_kwh: float
+    consumption_kwh: float
+    surplus_kwh: float
+
+    class Config:
+        orm_mode = True
+
+class TransactionOut(BaseModel):
+    id: Optional[uuid.UUID]
+    from_user_id: uuid.UUID
+    to_user_id: uuid.UUID
+    kwh: float
+    price_per_kwh: float
+    total_amount: float
+    timestamp: datetime
+
+    class Config:
+        orm_mode = True
+
+class TradeRunResponse(BaseModel):
+    tick_timestamp: datetime
+    total_supply_kwh: float
+    total_demand_kwh: float
+    total_traded_kwh: float
+    unmatched_supply_kwh: float
+    unmatched_demand_kwh: float
+    transactions: List[TransactionOut]
