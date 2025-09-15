@@ -216,6 +216,11 @@ def update_user(id: uuid.UUID, payload: UserUpdate, db: Session = Depends(get_db
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Get User Info failed: {str(e)}"
         )
+    
+#fetch weather info from API
+@router.get('/api/v1/simulation/weather/', status_code = status.HTTP_200_OK)
+def fetch_weather_info():
+    pass
 
 # POST /energy-data → Single reading
 @router.post("/api/v1/energy-data/", status_code=status.HTTP_201_CREATED, response_model=EnergyDataResponse)

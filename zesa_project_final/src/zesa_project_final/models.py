@@ -1,4 +1,4 @@
-from sqlalchemy import ARRAY, UUID, Boolean, Column, Date, DateTime, Integer, String, Float, ForeignKey, TIMESTAMP, Text, text, Enum, event, func, UniqueConstraint, CheckConstraint
+from sqlalchemy import ARRAY, UUID, Boolean, Column, Date, DateTime, Integer, String, Float, ForeignKey, TIMESTAMP, Text, TypeDecorator, text, Enum, event, func, UniqueConstraint, CheckConstraint
 #from sqlalchemy.types import Decimal
 from sqlalchemy.orm import relationship, Session, validates
 from sqlalchemy.orm import Session as OrmSession 
@@ -9,6 +9,18 @@ import random
 from enum import Enum as MyEnum
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
+from geoalchemy2 import Geometry
+
+#custom class to format the GPS coordinates
+class GeometryType(TypeDecorator):
+    impl = String
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        return f"SRID=4326;POINT({value.lon} {value.lat})"
+
+    def process_result_value(self, value, dialect):
+        return value
 
 class SimulationStatus(str, MyEnum):
     RUNNING = "Running"
@@ -65,16 +77,19 @@ class User(Base):
     name = Column(String(255), nullable=False)
     surname = Column(String(50), nullable=False)
     # we can pull the user's location and feed it to the model for better simulation
-    #TODO: add location, lat and long
+    location = Column(Geometry("POINT", srid=4326), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
     username = Column(String(100), nullable=False, unique=True)
     password_hash = Column(String(255), nullable=False)  # store hashed password
     role = Column(Enum(UserRole), default=UserRole.CONSUMER, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    cluster_id = Column(UUID(as_uuid=True), ForeignKey('user_cluster.id'), nullable=True, index=True)
 
     system = relationship("UserSystem", back_populates="user", uselist=False)
     balances = relationship("Balance", back_populates="user")
     energy_data = relationship("EnergyData", back_populates="user")
+    #1 user can only have 1 cluster
+    cluster = relationship("UserCluster", back_populates="users")
 
 
 class UserSystem(Base):
@@ -98,6 +113,15 @@ class UserSystem(Base):
         CheckConstraint("battery_capacity_kwh >= 0", name="non_negative_battery"),
         CheckConstraint("inverter_capacity_kw > 0", name="positive_inverter"),
     )
+
+class UserCluster(Base):
+    __tablename__ = 'user_cluster'
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
+    radius = Column(Float, nullable = False)
+    location = Column(Geometry("POINT", srid=4326), nullable=False)
+    num_users = Column(Integer, nullable=False, default=0)
+    #1 cluster can have many users
+    users = relationship("User", back_populates="cluster")
 
 class SimulationRun(Base):
     __tablename__ = "simulation_runs"

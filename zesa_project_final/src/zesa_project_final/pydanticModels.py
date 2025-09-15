@@ -148,3 +148,14 @@ class TradeRunResponse(BaseModel):
     unmatched_supply_kwh: float
     unmatched_demand_kwh: float
     transactions: List[TransactionOut]
+
+class WeatherResponse(BaseModel):
+    temp: float
+    pressure: int
+    humidity: int
+    dew_point: float
+    uvi: float
+    clouds: int
+    visibility: int
+    wind_speed: float
+
