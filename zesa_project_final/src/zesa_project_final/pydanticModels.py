@@ -22,6 +22,10 @@ class UserSystemResponse(BaseModel):
     system_type : SystemType 
     household_size : int
 
+class RegisterUserLocation(BaseModel):
+    lat: float
+    lon: float
+
 class RegisterUser(BaseModel):
     name: str
     surname: str
@@ -30,6 +34,7 @@ class RegisterUser(BaseModel):
     role: UserRole = UserRole.PROSUMER
     password: str
     system: Optional[UserSystem] = None #user might be a consumer
+    location: RegisterUserLocation
 
 class RegisterUserResponse(BaseModel):
     user_id: uuid.UUID
@@ -37,6 +42,7 @@ class RegisterUserResponse(BaseModel):
     role: UserRole
     created_at: datetime
     system : Optional[UserSystemResponse] = None
+    cluster_id: uuid.UUID
 
 class LoginUser(BaseModel):
     email: Optional[EmailStr] = None

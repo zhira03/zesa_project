@@ -1,12 +1,14 @@
 from decimal import Decimal, getcontext
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Request, File, UploadFile
 from psycopg2 import IntegrityError
+from shapely import Point
 from sqlalchemy.orm import Session,joinedload, aliased
 from dependencies import get_db
 from pydanticModels import *
 from auth import *
 import models
 from utils import _get_or_create_balance
+from weatherInfo import assign_new_user_to_cluster
 
 getcontext().prec = 12
 
@@ -22,6 +24,9 @@ def register_user(user: RegisterUser, db:Session = Depends(get_db)):
     try:
         # Hash the password
         hashed_password = get_password_hash(user.password)
+
+        # Build geometry from location
+        user_location = Point(user.location.lon, user.location.lat)
         
         new_user = User(
             name=user.name,
@@ -29,11 +34,15 @@ def register_user(user: RegisterUser, db:Session = Depends(get_db)):
             username=user.username,
             email=user.email,
             role=user.role,
-            password_hash=hashed_password #hashed in the model
+            password_hash=hashed_password, #hashed in the model
+            location = user_location
         )
         db.add(new_user)
         db.flush()
         db.refresh(new_user)
+
+        # assign to cluster immediately
+        cluster_id = assign_new_user_to_cluster(db, new_user)
 
         if user.role in [UserRole.PRODUCER, UserRole.PROSUMER]:
             if user.system is not None:
@@ -73,7 +82,8 @@ def register_user(user: RegisterUser, db:Session = Depends(get_db)):
             name=new_user.name,
             role=new_user.role,
             created_at=new_user.created_at,
-            system=systemResponse if user.role in [UserRole.PRODUCER, UserRole.PROSUMER] and user.system else None
+            system=systemResponse if user.role in [UserRole.PRODUCER, UserRole.PROSUMER] and user.system else None,
+            cluster_id=cluster_id
         )
     
     except HTTPException:
