@@ -120,8 +120,29 @@ class UserCluster(Base):
     radius = Column(Float, nullable = False)
     location = Column(Geometry("POINT", srid=4326), nullable=False)
     num_users = Column(Integer, nullable=False, default=0)
+    weather_data_id = Column(UUID(as_uuid=True), ForeignKey('weather_data.id'), nullable=True, index=True)
     #1 cluster can have many users
     users = relationship("User", back_populates="cluster")
+    #1 cluster is linked to 1 weather point
+    weather_data = relationship("WeatherData", back_populates="cluster", cascade="all, delete-orphan")
+
+
+
+class WeatherData(Base):
+    __tablename__ = "weather_data"
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
+    temp = Column(Float, nullable=False, default=0.0)
+    pressure = Column(Float, nullable=False, default=0.0)
+    humidity = Column(Float, nullable=False, default=0.0)
+    dew_point = Column(Float, nullable=False, default=0.0)
+    uvi = Column(Float, nullable=False, default=0.0)
+    cloud_cover = Column(Float, nullable=False, default=0.0)
+    visibility = Column(Float, nullable=False, default=0.0)
+    wind_speed = Column(Float, nullable=False, default=0.0)
+    is_expired = Column(Boolean, nullable=False, default=False)
+    cluster_id = Column(UUID(as_uuid=True), ForeignKey('user_cluster.id'), nullable=False, index=True)
+    # link back
+    cluster = relationship("UserCluster", back_populates="weather_data")
 
 class SimulationRun(Base):
     __tablename__ = "simulation_runs"

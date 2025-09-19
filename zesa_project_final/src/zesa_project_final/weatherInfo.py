@@ -145,6 +145,25 @@ def fetch_weather_by_cluster(db: Session, api_key: str):
             api_key=api_key
         )
 
+        #save each weather data point per cluster as long as weatherdata.is_expired is false
+        #check if cluster already has weather data point
+        cluster_weather = db.query(models.WeatherData).filter(models.WeatherData.cluster_id == cluster.id, models.WeatherData.is_expired == False).first()
+        if not cluster_weather:
+            new_cluster_weather_data = models.WeatherData(
+                temp = weather.temp,
+                pressure = weather.pressure,
+                humidity = weather.humidity,
+                dew_point = weather.dew_point,
+                uvi = weather.uvi,
+                cloud_cover = weather.clouds,
+                visibility = weather.visibility,
+                cluster_id = cluster.id,
+                wind_speed = weather.wind_speed
+            )
+
+        db.add(new_cluster_weather_data)
+        db.commit()
+
         weather_data.append({
             "cluster_id": str(cluster.id),
             "weather": weather.dict(),
