@@ -8,6 +8,10 @@ from sqlalchemy.orm import Session,joinedload
 import models
 from dependencies import SessionLocal
 
+#fetch weather info from the openWeather API
+def fetch_weather_data():
+    pass
+
 def expire_old_weather_data():
     db : Session = SessionLocal()
 
