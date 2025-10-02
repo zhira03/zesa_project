@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:zesa_app/components/animations.dart';
 import 'package:zesa_app/components/themes.dart';
 import 'package:zesa_app/login/login.dart';
 import 'package:zesa_app/login/login2.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
           title: 'Flutter Demo',
           debugShowCheckedModeBanner: false,
           theme: themeProvider.currentTheme,
-          home: LoginScreen(),
+          home: SplashScreen(),
         );
       }
     );

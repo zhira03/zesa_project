@@ -358,7 +358,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             ],
             const SizedBox(height: 8),
             _buildPrimaryButton(
-              _isLogin ? 'Sign In' : 'Create Account',
+              _isLogin ? 'Log In' : 'Create Account',
             _handleSubmit,
             ),
             const SizedBox(height: 16),
@@ -467,33 +467,14 @@ Widget _buildPrimaryButton(String text, VoidCallback? onPressed) {
                 fit: BoxFit.cover,
               ),
             ),
-            Positioned(
-              left: 10,
-              right: 25,
-              top: 30,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton.filled(
-                    onPressed: (){
-                      Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-                    }, 
-                    icon: Icon(
-                      Provider.of<ThemeProvider>(context).isDarkMode
-                        ? Icons.light_mode
-                        : Icons.dark_mode
-                    )
-                  )
-                ],
-              ),
-            ),
+            // 
             Align(
               alignment: Alignment.center,
               child: SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: Container(
                   width: screenWidth * 0.85,
-                  height: screenHeight * 0.72,
+                  height: screenHeight * 0.73,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -504,8 +485,8 @@ Widget _buildPrimaryButton(String text, VoidCallback? onPressed) {
                             const Color.fromARGB(127, 20, 20, 40),   
                           ]
                         : [
-                            const Color.fromARGB(126, 180, 172, 226), 
-                            const Color.fromARGB(127, 21, 2, 88),     
+                            const Color.fromARGB(125, 134, 128, 170), 
+                            const Color.fromARGB(126, 51, 50, 54),     
                           ],
                     ),
                     borderRadius: BorderRadius.circular(20),
@@ -521,13 +502,42 @@ Widget _buildPrimaryButton(String text, VoidCallback? onPressed) {
                   child:Column(
                     // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'SunSwap',
-                        style: GoogleFonts.inter(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.5,
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Watt',
+                            style: GoogleFonts.zenDots(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: (){
+                              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                            }, 
+                            icon: Icon(
+                              Provider.of<ThemeProvider>(context).isDarkMode
+                                ? Icons.flash_on
+                                : Icons.electric_bolt
+                            ), 
+                            color: Provider.of<ThemeProvider>(context).isDarkMode
+                              ? Colors.black
+                              : Colors.white,
+                            highlightColor: Colors.transparent,
+                            iconSize: 38,
+                          ),
+                          Text(
+                            'Trade',
+                            style: GoogleFonts.zenDots(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 8),
                       Text(
