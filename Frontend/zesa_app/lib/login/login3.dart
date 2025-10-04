@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:zesa_app/components/themes.dart';
+import 'package:WattTrade/components/themes.dart';
+import 'package:WattTrade/screens/prosumer/landing.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -102,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       
       if (mounted) {
         _showSuccessMessage(_isLogin ? 'Welcome back!' : 'Account created successfully!');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LandingPage()));
       }
     }
   }

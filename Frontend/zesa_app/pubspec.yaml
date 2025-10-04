@@ -1,4 +1,4 @@
-name: zesa_app
+name: WattTrade
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -67,6 +67,7 @@ flutter:
     - assets/sunShare2.jpg
     - assets/nightLights.jpg
     - assets/animations/charging-electricity.json
+    - assets/prosumer/dayLightGen.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

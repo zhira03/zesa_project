@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:zesa_app/login/login3.dart';
+import 'package:WattTrade/login/login3.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -27,11 +27,24 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: Lottie.asset(
-          'assets/animations/charging-electricity.json',
-          width: 200,
-          height: 200,
-          fit: BoxFit.cover,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Lottie.asset(
+              'assets/animations/charging-electricity.json',
+              width: 300,
+              height: 300,
+              fit: BoxFit.cover,
+            ),
+            Text(
+              "WattTrade",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black, 
+              ),
+            ),
+          ],
         ),
       ),
     );

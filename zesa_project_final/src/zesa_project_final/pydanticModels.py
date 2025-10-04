@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Dict, List, Optional
-from pydantic import BaseModel, Field, EmailStr, field_validator
+from pydantic import BaseModel, Field, EmailStr
 from datetime import date
 from models import *
 import uuid
