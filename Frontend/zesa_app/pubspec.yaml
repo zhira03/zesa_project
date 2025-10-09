@@ -38,6 +38,7 @@ dependencies:
   flutter_svg: ^2.2.1
   provider: ^6.1.5+1
   lottie: ^3.3.1
+  fl_chart: ^0.66.0
 
 dev_dependencies:
   flutter_test:

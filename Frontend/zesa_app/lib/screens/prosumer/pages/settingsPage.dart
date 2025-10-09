@@ -11,33 +11,33 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            CircleAvatar(),
-            SizedBox(width: 8),
-            Column(
-              children: [
-                Text("Greeting"),
-                // Text("Greeting with Name",
-                //   style: TextStyle(
-                //     fontSize: 10
-                //   ),
-                // ),
-              ],
+      body: CustomScrollView(
+        slivers: [
+          // --- AppBar that disappears on scroll ---
+          SliverAppBar(
+            expandedHeight: 200,
+            pinned: true, // stays visible in collapsed state
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text('Generation Stats'),
+              background: Image.asset(
+                'assets/prosumer/dayLightGen.jpg',
+                fit: BoxFit.cover,
+              ),
             ),
-          ],
-        ),
-        actions: [
-          IconButton.filled(
-            onPressed: (){}, 
-            icon: Icon(Icons.settings),
-            color: Colors.white70,
-          )
+          ),
+
+          // --- Scrollable content below ---
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => ListTile(
+                title: Text('Setting Option ${index + 1}'),
+                subtitle: const Text('Tap to configure'),
+                leading: const Icon(Icons.tune),
+              ),
+              childCount: 30, // enough items to test scrolling
+            ),
+          ),
         ],
-      ),
-      body: Center(
-        child: Text('Welcome to the Settings Page!'),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:WattTrade/components/prosumerConsumption.dart';
 import 'package:WattTrade/components/prosumerGeneration.dart';
 import 'package:WattTrade/components/prosumerHistory.dart';
 import 'package:flutter/material.dart';
@@ -14,17 +15,29 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // primary: false,
+        backgroundColor: Colors.greenAccent,
+        elevation: 5,
         title: Row(
           children: [
             CircleAvatar(),
             SizedBox(width: 8),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Greeting"),
-                Text("Greeting with Name",
+                Text(
+                  "Greeting",
                   style: TextStyle(
-                    fontSize: 10
-                  ),),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "Hey Taku",
+                  style: TextStyle(
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ),
           ],
@@ -47,7 +60,6 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.red, width: 2)
                 ),
                 child: Stack(
                   children: [
@@ -125,27 +137,27 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 const Icon(
                                   Icons.wb_sunny,
-                                  color: Colors.white,
+                                  color: Colors.yellow,
                                   size: 40,
                                 ),
                                 const SizedBox(width: 12),
                                 const Column(
                                   // mainAxisAlignment: MainAxisAlignment.end,
-                                  // crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Clear',
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     Text(
                                       'Rawalpindi, Pakistan',
                                       style: TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 12,
+                                        color: Colors.black,
+                                        fontSize: 16,
                                       ),
                                     ),
                                   ],
@@ -157,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                                     Text(
                                       '22°C',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Colors.black,
                                         fontSize: 28,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -165,7 +177,7 @@ class _HomePageState extends State<HomePage> {
                                     Text(
                                       '09 Dec, 2023',
                                       style: TextStyle(
-                                        color: Colors.white70,
+                                        color: Colors.black,
                                         fontSize: 11,
                                       ),
                                     ),
@@ -189,7 +201,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text("Stats"),
                   SizedBox(
-                    height: 200,
+                    height: 350,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       physics: AlwaysScrollableScrollPhysics(),
@@ -198,27 +210,16 @@ class _HomePageState extends State<HomePage> {
                           generatedkWh: 100, 
                           panelCount: 5, 
                           panelSize: 585, 
-                          batteryCapacity: 48, 
-                          batterySOC: 80, 
-                          inverterCapacity: 6000
+                          batteryCapacity: 48,
+                          inverterCapacity: 6000, 
+                          exportingToGrid: 500,
                         ),
                         SizedBox(width: 10,),
-                        GenerationStats(
-                          generatedkWh: 200, 
-                          panelCount: 5, 
-                          panelSize: 585, 
+                        UsageStats(
+                          currentConsumption: 23, 
+                          batteryPercentage: 85, 
                           batteryCapacity: 48, 
-                          batterySOC: 80, 
-                          inverterCapacity: 6000
-                        ),
-                        SizedBox(width: 10,),
-                        GenerationStats(
-                          generatedkWh: 500, 
-                          panelCount: 5, 
-                          panelSize: 585, 
-                          batteryCapacity: 48, 
-                          batterySOC: 80, 
-                          inverterCapacity: 6000
+                          inverterOutput: 300,
                         ),
                       ],
                     ),

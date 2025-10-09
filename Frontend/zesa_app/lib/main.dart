@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:WattTrade/components/animations.dart';
 import 'package:WattTrade/components/themes.dart';
-import 'package:WattTrade/login/login.dart';
-import 'package:WattTrade/login/login2.dart';
-import 'package:WattTrade/login/login3.dart';
 
 void main() {
   runApp(
