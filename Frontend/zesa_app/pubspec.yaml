@@ -68,6 +68,9 @@ flutter:
     - assets/nightLights.jpg
     - assets/animations/charging-electricity.json
     - assets/prosumer/dayLightGen.jpg
+    - assets/prosumer/dayLightGen2.jpg
+    - assets/prosumer/dayLightBackground.png
+    - assets/prosumer/nightTimeBackground.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,4 +1,5 @@
 import 'package:WattTrade/screens/prosumer/pages/homePage.dart';
+import 'package:WattTrade/screens/prosumer/pages/home2.dart';
 import 'package:WattTrade/screens/prosumer/pages/settingsPage.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,8 @@ class _LandingPageState extends State<LandingPage> {
   int _selectedIndex = 0;
   final List <Widget> _pages = [
     HomePage(),
-    SettingsPage()
+    SolarMonitorApp(),
+    SettingsPage(),
   ];
 
   void navigationBarIndex(int index){
@@ -35,15 +37,15 @@ class _LandingPageState extends State<LandingPage> {
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 255, 255, 255),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.black,
+                //     blurRadius: 10,
+                //     offset: const Offset(0, 5),
+                //   ),
+                // ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(25),
@@ -56,6 +58,7 @@ class _LandingPageState extends State<LandingPage> {
                   backgroundColor: Colors.transparent, 
                   items: const [
                     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+                    BottomNavigationBarItem(icon: Icon(Icons.house), label: "Home2"),
                     BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
                     BottomNavigationBarItem(icon: Icon(Icons.account_box), label: "Account"),
                   ],
