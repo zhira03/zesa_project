@@ -36,7 +36,7 @@ class _UsageStatsState extends State<UsageStats>
   late AnimationController _pulseController;
   late AnimationController _batteryDrainController;
   late AnimationController _sparkController;
-  bool _showDetails = true;
+  bool _showDetails = false;
 
   @override
   void initState() {

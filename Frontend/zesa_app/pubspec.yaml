@@ -72,6 +72,8 @@ flutter:
     - assets/prosumer/dayLightGen2.jpg
     - assets/prosumer/dayLightBackground.png
     - assets/prosumer/nightTimeBackground.png
+    - assets/prosumer/darkMode.jpg
+    - assets/prosumer/daylightImage.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

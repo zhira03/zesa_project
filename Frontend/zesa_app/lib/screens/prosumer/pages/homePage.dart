@@ -1,7 +1,10 @@
 import 'package:WattTrade/components/prosumerConsumption.dart';
 import 'package:WattTrade/components/prosumerGeneration.dart';
 import 'package:WattTrade/components/prosumerHistory.dart';
+import 'package:WattTrade/components/prosumerSystem.dart';
+import 'package:WattTrade/components/themes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -47,7 +50,23 @@ class _HomePageState extends State<HomePage> {
             onPressed: (){}, 
             icon: Icon(Icons.settings),
             color: Colors.white70,
-          )
+          ),
+          const SizedBox(width: 2),
+          IconButton(
+            onPressed: (){
+              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+            }, 
+            icon: Icon(
+              Provider.of<ThemeProvider>(context).isDarkMode
+                ? Icons.flash_on
+                : Icons.electric_bolt
+            ), 
+            color: Provider.of<ThemeProvider>(context).isDarkMode
+              ? Colors.black
+              : Colors.white,
+            highlightColor: Colors.transparent,
+            iconSize: 38,
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -65,7 +84,9 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Positioned.fill(
                       child: Image.asset(
-                        'assets/prosumer/dayLightGen2.jpg',
+                        Provider.of<ThemeProvider>(context).isDarkMode
+                          ? 'assets/prosumer/darkMode.jpg'
+                          : 'assets/prosumer/dayLightGen2.jpg',
                         height: 320,
                         fit: BoxFit.fitWidth,
                         errorBuilder: (context, error, stackTrace) {
@@ -141,14 +162,16 @@ class _HomePageState extends State<HomePage> {
                                   size: 40,
                                 ),
                                 const SizedBox(width: 12),
-                                const Column(
+                                Column(
                                   // mainAxisAlignment: MainAxisAlignment.end,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Clear',
                                       style: TextStyle(
-                                        color: Colors.black,
+                                        color: Provider.of<ThemeProvider>(context).isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -156,20 +179,24 @@ class _HomePageState extends State<HomePage> {
                                     Text(
                                       'Rawalpindi, Pakistan',
                                       style: TextStyle(
-                                        color: Colors.black,
+                                        color: Provider.of<ThemeProvider>(context).isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
                                         fontSize: 16,
                                       ),
                                     ),
                                   ],
                                 ),
                                 const Spacer(),
-                                const Column(
+                                Column(
                                   // crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
                                       '22°C',
                                       style: TextStyle(
-                                        color: Colors.black,
+                                        color: Provider.of<ThemeProvider>(context).isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
                                         fontSize: 28,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -177,7 +204,9 @@ class _HomePageState extends State<HomePage> {
                                     Text(
                                       '09 Dec, 2023',
                                       style: TextStyle(
-                                        color: Colors.black,
+                                        color: Provider.of<ThemeProvider>(context).isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
                                         fontSize: 11,
                                       ),
                                     ),
@@ -227,6 +256,8 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            const SizedBox(height: 30),
+            SystemStats(),
             const SizedBox(height: 30),
             TransactionHistory(),
             //show solar system info if its a prosumer
