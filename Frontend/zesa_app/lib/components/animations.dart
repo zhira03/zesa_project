@@ -43,12 +43,13 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             Spacer(),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.only(bottom: 50),
               child: Text(
                 "WattTrade",
                 style: GoogleFonts.zenDots(
                   fontSize: 32,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black
                 ),
               ),
             ),

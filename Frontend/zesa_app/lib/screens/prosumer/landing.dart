@@ -1,7 +1,6 @@
 import 'package:WattTrade/components/themes.dart';
 import 'package:WattTrade/screens/prosumer/pages/accountPage.dart';
 import 'package:WattTrade/screens/prosumer/pages/homePage.dart';
-import 'package:WattTrade/screens/prosumer/pages/home2.dart';
 import 'package:WattTrade/screens/prosumer/pages/settingsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +16,7 @@ class _LandingPageState extends State<LandingPage> {
   int _selectedIndex = 0;
   final List <Widget> _pages = [
     HomePage(),
-    SettingsPage(),
+    ReportsPage(),
     AccountPage(),
   ];
 
@@ -42,13 +41,6 @@ class _LandingPageState extends State<LandingPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(25),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.black,
-                //     blurRadius: 10,
-                //     offset: const Offset(0, 5),
-                //   ),
-                // ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(25),
