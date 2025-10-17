@@ -3,6 +3,7 @@ import 'package:WattTrade/components/animatedAppBar.dart';
 import 'package:WattTrade/components/animatedLogout.dart';
 import 'package:WattTrade/components/themes.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -102,8 +103,8 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                     const SizedBox(height: 10),
                     QuickActionTile(
-                      icon: FluentIcons.settings_24_filled,
-                      text: "Settings",
+                      icon: Icons.notifications,
+                      text: "Notifications",
                       routePath: '/',
                     ),
                   ],

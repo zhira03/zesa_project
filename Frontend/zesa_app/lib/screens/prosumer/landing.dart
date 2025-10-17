@@ -17,7 +17,6 @@ class _LandingPageState extends State<LandingPage> {
   int _selectedIndex = 0;
   final List <Widget> _pages = [
     HomePage(),
-    SolarMonitorApp(),
     SettingsPage(),
     AccountPage(),
   ];
@@ -66,7 +65,6 @@ class _LandingPageState extends State<LandingPage> {
                     : Colors.black,
                   items: const [
                     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-                    BottomNavigationBarItem(icon: Icon(Icons.notifications), label: "Notifications"),
                     BottomNavigationBarItem(icon: Icon(Icons.edit_document), label: "Report"),
                     BottomNavigationBarItem(icon: Icon(Icons.account_box), label: "Account"),
                   ],
