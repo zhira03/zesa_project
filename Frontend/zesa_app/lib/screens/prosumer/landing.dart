@@ -1,7 +1,10 @@
+import 'package:WattTrade/components/themes.dart';
+import 'package:WattTrade/screens/prosumer/pages/accountPage.dart';
 import 'package:WattTrade/screens/prosumer/pages/homePage.dart';
 import 'package:WattTrade/screens/prosumer/pages/home2.dart';
 import 'package:WattTrade/screens/prosumer/pages/settingsPage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -16,6 +19,7 @@ class _LandingPageState extends State<LandingPage> {
     HomePage(),
     SolarMonitorApp(),
     SettingsPage(),
+    AccountPage(),
   ];
 
   void navigationBarIndex(int index){
@@ -35,7 +39,7 @@ class _LandingPageState extends State<LandingPage> {
             right: 0,
             bottom: 0,
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 15 , vertical: 10),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(25),
@@ -53,13 +57,17 @@ class _LandingPageState extends State<LandingPage> {
                   type: BottomNavigationBarType.fixed,
                   currentIndex: _selectedIndex,
                   onTap: navigationBarIndex,
-                  selectedItemColor: Colors.green,
-                  unselectedItemColor: Colors.grey, 
-                  backgroundColor: Colors.transparent, 
+                  selectedItemColor: Colors.lightBlue,
+                  unselectedItemColor: Provider.of<ThemeProvider>(context).isDarkMode
+                    ? Colors.black
+                    : Colors.white60, 
+                  backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
+                    ? Colors.white60
+                    : Colors.black,
                   items: const [
                     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-                    BottomNavigationBarItem(icon: Icon(Icons.house), label: "Home2"),
-                    BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
+                    BottomNavigationBarItem(icon: Icon(Icons.notifications), label: "Notifications"),
+                    BottomNavigationBarItem(icon: Icon(Icons.edit_document), label: "Report"),
                     BottomNavigationBarItem(icon: Icon(Icons.account_box), label: "Account"),
                   ],
                 ),

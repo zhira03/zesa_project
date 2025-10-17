@@ -257,6 +257,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 30),
+            Text("System Rating"),
             SystemStats(),
             const SizedBox(height: 30),
             TransactionHistory(),

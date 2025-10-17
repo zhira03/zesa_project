@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class SystemStats extends StatefulWidget {
   const SystemStats({super.key});
@@ -8,6 +9,8 @@ class SystemStats extends StatefulWidget {
 }
 
 class _SystemStatsState extends State<SystemStats> with TickerProviderStateMixin{
+
+  final pageView = PageController();
 
 
   @override
@@ -39,84 +42,60 @@ class _SystemStatsState extends State<SystemStats> with TickerProviderStateMixin
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15),
+              SizedBox(
+                height: 400,
+                child: PageView(
+                  controller: pageView,
+                  children: [
+                    Container(
+                      color: Colors.red,
+                      height: 80,
+                      width: 80,
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Text("Panels Info")
+                          ],
+                        ),
+                      ),
                     ),
-                    child: Stack(
-                      children: [
-                        Image.asset(
-                          'assets/prosumer/dayLightGen.jpg',
-                          height: 190,
-                          width: double.infinity,
-                          fit: BoxFit.fitWidth,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 190,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Colors.blue[900]!,
-                                    Colors.blue[700]!,
-                                  ],
-                                ),
-                              ),
-                              child: const Center(
-                                child: Icon(Icons.solar_power, 
-                                  size: 60, 
-                                  color: Colors.white54,
-                                ),
-                              ),
-                            );
-                          },
+                    Container(
+                      color: Colors.green,
+                      height: 80,
+                      width: 80,
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Text("Inverter Info")
+                          ],
                         ),
-                        Container(
-                          height: 190,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.black.withOpacity(0.4),
-                                Colors.transparent,
-                                const Color(0xFF16213e).withOpacity(0.8),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    left: 16,
-                    right: 16,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("System Rating", 
-                          style: TextStyle(
-                            color: Colors.white
-                          ),
+                    Container(
+                      color: Colors.blue,
+                      height: 80,
+                      width: 80,
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Text("Battery Info")
+                          ],
                         ),
-                        const SizedBox(height: 4),
-                        Text("6.5kVA",
-                          style: TextStyle(
-                            color: Colors.white
-                          ),
-                        ),
-                      ],
-                    )
-                  ),
-                ]
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              Align(
+                alignment: Alignment(0, 0.95),
+                child: SmoothPageIndicator(
+                  controller: pageView, 
+                  count: 3,
+                  effect: JumpingDotEffect(),
+                ),
+              )
             ],
           ),
         )

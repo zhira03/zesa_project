@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:WattTrade/login/login3.dart';
 
@@ -27,21 +28,28 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: Stack(
-          alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Lottie.asset(
-              'assets/animations/charging-electricity.json',
-              width: 300,
-              height: 300,
-              fit: BoxFit.cover,
+            SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+            Align(
+              alignment: Alignment.center,
+              child: Lottie.asset(
+                'assets/animations/charging-electricity.json',
+                width: 300,
+                height: 300,
+                fit: BoxFit.cover,
+              ),
             ),
-            Text(
-              "WattTrade",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black, 
+            Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                "WattTrade",
+                style: GoogleFonts.zenDots(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
           ],
