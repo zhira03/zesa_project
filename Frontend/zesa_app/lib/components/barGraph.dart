@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 class EnergyChart extends StatefulWidget {
   final double energyGenerated;
   final List<double> hourlyData; // 24 values for each hour
+  final List<double> dailyData; // 24 values for each day
+  final List<double> monthlyData; // 24 values for each month
+  final List<double> yearlyData; // 24 values for each year
   final String selectedPeriod;
   final Function(String) onPeriodChanged;
   final String title;
   final IconData icon;
+  final List<Color> gradientColors;
 
   const EnergyChart({
     Key? key,
@@ -15,7 +19,11 @@ class EnergyChart extends StatefulWidget {
     this.selectedPeriod = 'Day',
     required this.onPeriodChanged, 
     required this.title, 
-    required this.icon,
+    required this.icon, 
+    required this.gradientColors, 
+    required this.dailyData, 
+    required this.monthlyData, 
+    required this.yearlyData,
   }) : super(key: key);
 
   @override
@@ -23,7 +31,7 @@ class EnergyChart extends StatefulWidget {
 }
 
 class _EnergyChartState extends State<EnergyChart> {
-  final List<String> periods = ['Hour', 'Day', 'Week', 'Month', 'Year'];
+  final List<String> periods = ['Hour', 'Day', 'Month', 'Year'];
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +100,7 @@ class _EnergyChartState extends State<EnergyChart> {
             children: periods.map((period) {
               final isSelected = period == widget.selectedPeriod;
               return Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right:6),
                 child: GestureDetector(
                   onTap: () => widget.onPeriodChanged(period),
                   child: Container(
@@ -129,8 +137,16 @@ class _EnergyChartState extends State<EnergyChart> {
             child: CustomPaint(
               size: Size(270, 180),
               painter: BarChartPainter(
-                data: widget.hourlyData,
-                maxValue: 20,
+                data: widget.selectedPeriod == 'Hour'
+                    ? widget.hourlyData
+                    : widget.selectedPeriod == 'Day'
+                        ? widget.dailyData
+                            : widget.selectedPeriod == 'Month'
+                                ? widget.monthlyData
+                                : widget.yearlyData,
+                maxValue: 20, 
+                gradientColors: widget.gradientColors, 
+                selectedPeriod: widget.selectedPeriod,
               ),
             ),
           ),
@@ -143,17 +159,47 @@ class _EnergyChartState extends State<EnergyChart> {
 class BarChartPainter extends CustomPainter {
   final List<double> data;
   final double maxValue;
+  final List<Color> gradientColors;
+  final String selectedPeriod;
 
   BarChartPainter({
+    required this.selectedPeriod,
+    required this.gradientColors, 
     required this.data,
     required this.maxValue,
   });
 
+  List<String> _getTimeLabels() {
+  switch (selectedPeriod) {
+    case 'Hour':
+      return ['00:00', '06:00', '12:00', '18:00'];
+    
+    case 'Day':
+      return ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    case 'Month':
+      return ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'];
+    
+    case 'Year':
+      final currentYear = DateTime.now().year;
+      return [
+        '${currentYear - 2}',
+        '${currentYear - 1}',
+        '$currentYear',
+        '${currentYear + 1}',
+        '${currentYear + 2}',
+      ];
+    
+    default:
+      return ['00:00', '06:00', '12:00', '18:00'];
+  }
+}
+
   @override
   void paint(Canvas canvas, Size size) {
-    final barWidth = size.width / data.length;
-    final barSpacing = barWidth * 0.3;
-    final actualBarWidth = barWidth - barSpacing;
+    final barWidth = (size.width / data.length).clamp(2.0, 20.0);
+    final actualBarWidth = barWidth * 0.6;
+    final barSpacing = barWidth - actualBarWidth;
     
     // Draw horizontal grid lines
     final gridPaint = Paint()
@@ -189,16 +235,21 @@ class BarChartPainter extends CustomPainter {
     }
     
     // Draw bars
+    final effectiveMaxValue = data.reduce((a, b) => a > b ? a : b) < maxValue
+        ? maxValue
+        : data.reduce((a, b) => a > b ? a : b);
+    final topPadding = 10.0;
+    final bottomPadding = 20.0;
+
     for (int i = 0; i < data.length; i++) {
-      final barHeight = (data[i] / maxValue) * size.height;
+      final barHeight = (data[i] / effectiveMaxValue) * (size.height - topPadding - bottomPadding);
       final x = i * barWidth + barSpacing / 2;
-      final y = size.height - barHeight;
-      
-      // Create gradient based on bar height
+      final y = size.height - barHeight - bottomPadding;
+
       final gradient = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: _getGradientColors(data[i] / maxValue),
+        colors: _getGradientColors(data[i] / effectiveMaxValue),
       );
       
       final rect = Rect.fromLTWH(x, y, actualBarWidth, barHeight);
@@ -215,10 +266,16 @@ class BarChartPainter extends CustomPainter {
     }
     
     // Draw time labels
-    final timeLabels = ['09:00', '12:00', '03:00', '06:00'];
-    final timePositions = [0, data.length ~/ 3, data.length * 2 ~/ 3, data.length - 1];
-    
-    for (int i = 0; i < timeLabels.length; i++) {
+    final timeLabels = _getTimeLabels();
+    final labelCount = timeLabels.length;
+
+  // Generate positions dynamically
+    final timePositions = List.generate(labelCount, (i) {
+      // Spread them evenly across the data indices
+      return (i * (data.length - 1) / (labelCount - 1)).round();
+    });
+
+    for (int i = 0; i < labelCount; i++) {
       final textPainter = TextPainter(
         text: TextSpan(
           text: timeLabels[i],
@@ -230,32 +287,34 @@ class BarChartPainter extends CustomPainter {
         textDirection: TextDirection.ltr,
       );
       textPainter.layout();
-      
+
       final x = timePositions[i] * barWidth + actualBarWidth / 2 - textPainter.width / 2;
-      textPainter.paint(
-        canvas,
-        Offset(x, size.height + 8),
-      );
+
+      textPainter.paint(canvas, Offset(x, size.height + 8));
     }
   }
   
   List<Color> _getGradientColors(double ratio) {
-    if (ratio > 0.75) {
-      return [
-        const Color(0xFFff6b6b),
-        const Color(0xFFff8e53),
-      ];
-    } else if (ratio > 0.5) {
-      return [
-        const Color(0xFFffd93d),
-        const Color(0xFFffb830),
-      ];
-    } else {
-      return [
-        const Color(0xFFffd93d),
-        const Color(0xFFc7e96f),
-      ];
+  // Use the gradientColors passed to the widget
+    if (gradientColors.length >= 4) {
+      if (ratio > 0.75) {
+        return [
+          gradientColors[0],
+          gradientColors[1],
+        ];
+      } else if (ratio > 0.5) {
+        return [
+          gradientColors[2],
+          gradientColors[3],
+        ];
+      }
     }
+    
+    // Fallback to default colors
+    return [
+      gradientColors[3],
+      Colors.white,
+    ];
   }
 
   @override
