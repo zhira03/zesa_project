@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import asdict
 from typing import Dict, List, Optional
 from pydantic import BaseModel, Field, EmailStr
 from datetime import date
@@ -133,6 +134,19 @@ class EnergyDataResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class EnergyTransaction(BaseModel):
+    transaction_id: str
+    tick_id: str
+    seller_id: str
+    buyer_id: str
+    kwh_bought: float
+    price_per_kwh: float
+    total_price: float
+    timestamp: str
+
+    def to_dict(self):
+        return asdict(self)
 
 class TransactionOut(BaseModel):
     id: Optional[uuid.UUID]

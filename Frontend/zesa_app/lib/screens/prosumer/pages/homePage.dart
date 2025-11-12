@@ -5,7 +5,9 @@ import 'package:WattTrade/components/prosumerHistory.dart';
 import 'package:WattTrade/components/prosumerSystem.dart';
 import 'package:WattTrade/components/themes.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +17,40 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  String _location = "Bulawayo, Zimbabwe"; //default location
+  double _temperature = 22.0; //default temperature
+  String _weatherSummary = "Clear"; //default weather summary
+
+  @override
+  void initState(){
+    super.initState();
+    _getDate();
+  }
+
+  Future<void> _getWeatherInfo() async { // im going to use the weeather model later
+    try {
+      final dio = Dio();
+      final response = await dio.get('http://127.0.0.1:8000/weather/info/');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        setState(() {
+          _location = data['location'] ?? "Bulawayo, Zimbabwe";
+          _temperature = (data['temperature'] as num).toDouble();
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching location: $e');
+    }
+  }
+
+  String _getDate(){
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('d MMM yyyy').format(now);
+    return formattedDate;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Clear',
+                                    _weatherSummary,
                                     style: TextStyle(
                                       color: Provider.of<ThemeProvider>(context).isDarkMode
                                         ? Colors.white
@@ -164,7 +200,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                   Text(
-                                    'Rawalpindi, Pakistan',
+                                    _location,
                                     style: TextStyle(
                                       color: Provider.of<ThemeProvider>(context).isDarkMode
                                         ? Colors.white
@@ -189,12 +225,13 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                   Text(
-                                    '09 Dec, 2023',
+                                    _getDate(),
                                     style: TextStyle(
                                       color: Provider.of<ThemeProvider>(context).isDarkMode
                                         ? Colors.white
                                         : Colors.black,
-                                      fontSize: 11,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold
                                     ),
                                   ),
                                 ],

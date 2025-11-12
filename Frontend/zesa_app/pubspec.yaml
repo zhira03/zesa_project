@@ -42,6 +42,8 @@ dependencies:
   smooth_page_indicator: ^1.2.1
   fluentui_system_icons: ^1.1.273
   drift: ^2.29.0
+  intl: ^0.20.2
+  dio: ^5.9.0
 
 dev_dependencies:
   build_runner: ^2.3.0
@@ -73,12 +75,21 @@ flutter:
     - assets/sunShare2.jpg
     - assets/nightLights.jpg
     - assets/animations/charging-electricity.json
+    - assets/animations/cloudy.json
+    - assets/animations/sunny.json
+    - assets/animations/thunderclouds.json
     - assets/prosumer/dayLightGen.jpg
     - assets/prosumer/dayLightGen2.jpg
     - assets/prosumer/dayLightBackground.png
     - assets/prosumer/nightTimeBackground.png
     - assets/prosumer/darkMode.jpg
     - assets/prosumer/daylightImage.jpeg
+    - assets/prosumer/solarPanels1.jpg
+    - assets/prosumer/solarPanels.jpg
+    - assets/prosumer/inverter1.jpg
+    - assets/prosumer/inverter2.jpg
+    - assets/prosumer/battery2.jpg
+    - assets/prosumer/battery1.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

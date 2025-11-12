@@ -98,7 +98,7 @@ class BlockchainDao extends DatabaseAccessor<AppDatabase> with _$BlockchainDaoMi
           ..limit(currentBlockCount - maxWindowSize); // Delete only the excess blocks
 
         // Perform the deletion of the oldest block(s)
-        await delete(recentBlocks).where((t) => t.id.isInQuery(query.map((row) => row.id))).go();
+        //await delete(recentBlocks).where((t) => t.id.isInQuery(query.map((row) => row.id))).go();
       }
     });
   }

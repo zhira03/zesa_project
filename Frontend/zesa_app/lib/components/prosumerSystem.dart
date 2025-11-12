@@ -1,4 +1,6 @@
+import 'package:WattTrade/components/themes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class SystemStats extends StatefulWidget {
@@ -54,23 +56,70 @@ class _SystemStatsState extends State<SystemStats> with TickerProviderStateMixin
                       height: 80,
                       width: 80,
                       child: Center(
-                        child: Column(
+                        child: Stack(
                           children: [
-                            Text("Panels Info")
+                            Positioned.fill(
+                              child: Image.asset(
+                                Provider.of<ThemeProvider>(context).isDarkMode
+                                  ? 'assets/prosumer/solarPanels1.jpg'
+                                  : 'assets/prosumer/solarPanels1.jpg',
+                                height: 320,
+                                fit: BoxFit.fitWidth,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    height: 50,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Icon(
+                                      Icons.solar_power,
+                                      size: 60,
+                                      color: Colors.white54,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ],
-                        ),
+                        )
                       ),
                     ),
                     Container(
                       color: Colors.green,
                       height: 80,
                       width: 80,
+                      //
                       child: Center(
-                        child: Column(
+                        child: Stack(
                           children: [
-                            Text("Inverter Info")
+                            Positioned.fill(
+                              child: Image.asset(
+                                Provider.of<ThemeProvider>(context).isDarkMode
+                                  ? 'assets/prosumer/inverter1.jpg'
+                                  : 'assets/prosumer/inverter1.jpg',
+                                height: 320,
+                                fit: BoxFit.fitWidth,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    height: 50,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Icon(
+                                      Icons.solar_power,
+                                      size: 60,
+                                      color: Colors.white54,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ],
-                        ),
+                        )
                       ),
                     ),
                     Container(
@@ -78,11 +127,34 @@ class _SystemStatsState extends State<SystemStats> with TickerProviderStateMixin
                       height: 80,
                       width: 80,
                       child: Center(
-                        child: Column(
+                        child: Stack(
                           children: [
-                            Text("Battery Info")
+                            Positioned.fill(
+                              child: Image.asset(
+                                Provider.of<ThemeProvider>(context).isDarkMode
+                                  ? 'assets/prosumer/battery1.jpg'
+                                  : 'assets/prosumer/battery2.jpg',
+                                height: 320,
+                                fit: BoxFit.fitWidth,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    height: 50,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Icon(
+                                      Icons.solar_power,
+                                      size: 60,
+                                      color: Colors.white54,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ],
-                        ),
+                        )
                       ),
                     ),
                   ],
