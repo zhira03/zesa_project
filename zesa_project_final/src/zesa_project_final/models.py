@@ -10,6 +10,8 @@ from enum import Enum as MyEnum
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from geoalchemy2 import Geometry
+from geoalchemy2.shape import to_shape
+from shapely.geometry import Point
 
 #custom class to format the GPS coordinates
 class GeometryType(TypeDecorator):
@@ -117,15 +119,12 @@ class UserSystem(Base):
 class UserCluster(Base):
     __tablename__ = 'user_cluster'
     id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
-    radius = Column(Float, nullable = False)
-    location = Column(Geometry("POINT", srid=4326), nullable=False)
+    radius = Column(Float, nullable=False)
+    location = Column(Geometry('POINT', srid=4326), nullable=False)
     num_users = Column(Integer, nullable=False, default=0)
     weather_data_id = Column(UUID(as_uuid=True), ForeignKey('weather_data.id'), nullable=True, index=True)
-    #1 cluster can have many users
     users = relationship("User", back_populates="cluster")
-    #1 cluster is linked to 1 weather point
-    weather_data = relationship("WeatherData", back_populates="cluster", cascade="all, delete-orphan")
-
+    weather_data = relationship("WeatherData", back_populates="cluster") 
 
 
 class WeatherData(Base):

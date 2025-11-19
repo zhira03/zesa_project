@@ -108,15 +108,15 @@ class _SunSwapAuthScreenState extends State<SunSwapAuthScreen> {
         _buildTextField(Icons.lock, "Password", true, textColor),
         const SizedBox(height: 12),
 
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: () {},
-            child: Text("Forgot Password?",
-                style: GoogleFonts.inter(color: accent)),
-          ),
-        ),
-        const SizedBox(height: 12),
+        // Align(
+        //   alignment: Alignment.centerRight,
+        //   child: TextButton(
+        //     onPressed: () {},
+        //     child: Text("Forgot Password?",
+        //         style: GoogleFonts.inter(color: accent)),
+        //   ),
+        // ),
+        // const SizedBox(height: 12),
 
         _buildPrimaryButton("Login", accent),
         const SizedBox(height: 16),

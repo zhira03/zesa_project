@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>( 
       builder: (context, themeProvider, child){
         return MaterialApp(
-          title: 'Flutter Demo',
+          title: 'WattTrade',
           debugShowCheckedModeBanner: false,
           theme: themeProvider.currentTheme,
           home: SplashScreen(),

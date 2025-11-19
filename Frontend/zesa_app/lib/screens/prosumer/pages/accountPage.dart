@@ -1,6 +1,7 @@
 import 'package:WattTrade/components/actionTile.dart';
 import 'package:WattTrade/components/animatedAppBar.dart';
 import 'package:WattTrade/components/animatedLogout.dart';
+import 'package:WattTrade/components/modeSlider.dart';
 import 'package:WattTrade/components/themes.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +17,15 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
+
+  bool? _isDarkMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _isDarkMode = Provider.of<ThemeProvider>(context, listen: false).isDarkMode;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -113,11 +123,20 @@ class _AccountPageState extends State<AccountPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                 child: SizedBox(
-                  height: 335,
+                  height: 450,
                   width: double.infinity,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text("Appearance",
+                        style: GoogleFonts.zenDots(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w100,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ThemeModeSlider(isDarkMode: _isDarkMode!),
+                      const SizedBox(height: 20),
                       Text("Location Info",
                         style: GoogleFonts.zenDots(
                           fontSize: 20,

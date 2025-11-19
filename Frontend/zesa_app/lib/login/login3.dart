@@ -476,7 +476,7 @@ Widget _buildPrimaryButton(String text, VoidCallback? onPressed) {
                 physics: AlwaysScrollableScrollPhysics(),
                 child: Container(
                   width: screenWidth * 0.85,
-                  height: screenHeight * 0.73,
+                  height: screenHeight * 0.8,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -553,10 +553,10 @@ Widget _buildPrimaryButton(String text, VoidCallback? onPressed) {
                 
                       //padding based on whether its login or signup
                       if(_isLogin == true)
-                      SizedBox(height: 50,),
+                      SizedBox(height: screenHeight * 0.03,),
                       // container will both login and signup logic
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: SizedBox(
                           width: double.infinity,
                           child: SingleChildScrollView(
