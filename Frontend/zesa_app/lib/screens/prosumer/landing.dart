@@ -37,7 +37,7 @@ class _LandingPageState extends State<LandingPage> {
             right: 0,
             bottom: 0,
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 15 , vertical: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 15 , vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(25),

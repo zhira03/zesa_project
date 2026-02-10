@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 localTestDb1 = "postgresql://postgres:newpassword@localhost:5432/localDB1"
 localTestDb2 = "postgresql://postgres:newpassword@localhost:5432/localDB2"
-localTestDb3= "postgresql://postgres:newpassword@localhost:5432/localDB3"
+localTestDb3= "postgresql://postgres:newpassword@localhost:5432/fabric1"
 
 engine = create_engine(localTestDb3)
 with engine.connect() as conn:

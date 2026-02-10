@@ -9,3 +9,10 @@ def _get_or_create_balance(db: Session, user_id):
         db.add(bal)
         db.flush()  # ensure it has an id when we update it
     return bal
+
+def match_orders(buyers, sellers):
+    for buyer in buyers:
+        for seller in sellers:
+            if seller.energy >= buyer.request:
+                execute_trade(buyer, seller)
+                break

@@ -116,7 +116,9 @@ class UserInfo(BaseModel):
         orm_mode = True
 
 class EnergyDataCreate(BaseModel):
-    user_id: uuid.UUID
+    simRunName: str
+    seed: int
+    user_system_id: uuid.UUID
     timestamp: datetime
     generation_kwh: float
     consumption_kwh: float

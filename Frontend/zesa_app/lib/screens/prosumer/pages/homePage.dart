@@ -4,7 +4,9 @@ import 'package:WattTrade/components/prosumerGeneration.dart';
 import 'package:WattTrade/components/prosumerHistory.dart';
 import 'package:WattTrade/components/prosumerSystem.dart';
 import 'package:WattTrade/components/themes.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
@@ -56,26 +58,25 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         // primary: false,
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
+          ? Colors.white
+          : Colors.black,
         elevation: 5,
         title: Row(
           children: [
-            CircleAvatar(),
+            CircleAvatar(child: Text("T"),),
             SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Greeting",
-                  style: TextStyle(
+                  "WattTrade",
+                  style: GoogleFonts.zenDots(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "Hey Taku",
-                  style: TextStyle(
-                    fontSize: 12,
+                    color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.black
+                      : Colors.white,
                   ),
                 ),
               ],
@@ -83,26 +84,19 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         actions: [
-          IconButton.filled(
-            onPressed: (){}, 
-            icon: Icon(Icons.settings),
-            color: Colors.white70,
-          ),
-          const SizedBox(width: 2),
           IconButton(
-            onPressed: (){
-              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-            }, 
-            icon: Icon(
-              Provider.of<ThemeProvider>(context).isDarkMode
-                ? Icons.flash_on
-                : Icons.electric_bolt
-            ), 
+            onPressed: (){}, 
+            icon: Icon(CupertinoIcons.mail_solid),
             color: Provider.of<ThemeProvider>(context).isDarkMode
               ? Colors.black
               : Colors.white,
-            highlightColor: Colors.transparent,
-            iconSize: 38,
+          ),
+          IconButton(
+            onPressed: (){}, 
+            icon: Icon(Icons.notifications),
+            color: Provider.of<ThemeProvider>(context).isDarkMode
+              ? Colors.black
+              : Colors.white,
           ),
         ],
       ),
@@ -143,36 +137,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Column(
                     children: [
-                      SizedBox(
-                        height: 50, 
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            physics: AlwaysScrollableScrollPhysics(),
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            children: [
-                              AnimatedElevatedButton(
-                                onPressed: (){}, 
-                                title: "Earnings", 
-                                icon: Icons.monetization_on,
-                              ),
-                              SizedBox(width: 12),
-                              AnimatedElevatedButton(
-                                onPressed: (){}, 
-                                title: "Settings",
-                                icon: Icons.settings,
-                              ),
-                              SizedBox(width: 12),
-                              AnimatedElevatedButton(
-                                onPressed: () {},
-                                title: "Notifications",
-                                icon: Icons.notifications,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                       const SizedBox(height: 50),
                       Column(
                         // crossAxisAlignment: CrossAxisAlignment.start,

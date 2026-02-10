@@ -10,6 +10,7 @@ from enum import Enum as MyEnum
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from geoalchemy2 import Geometry
+
 from geoalchemy2.shape import to_shape
 from shapely.geometry import Point
 
@@ -89,7 +90,6 @@ class User(Base):
 
     system = relationship("UserSystem", back_populates="user", uselist=False)
     balances = relationship("Balance", back_populates="user")
-    energy_data = relationship("EnergyData", back_populates="user")
     #1 user can only have 1 cluster
     cluster = relationship("UserCluster", back_populates="users")
 
@@ -107,6 +107,7 @@ class UserSystem(Base):
     installed_date = Column(DateTime, nullable=True)
     #number of people in the house using the system
     household_size = Column(Integer, nullable=True)
+    energy_data = relationship("EnergyData", back_populates="user_system")
 
     user = relationship("User", back_populates="system")
     __table_args__ = (
@@ -158,7 +159,7 @@ class EnergyData(Base):
     __table_args__ = (UniqueConstraint("user_id", "timestamp", name="unique_user_timestamp"),)
 
     id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_system_id = Column(UUID(as_uuid=True), ForeignKey("user_systems.id"), nullable=False)
     timestamp = Column(DateTime, index=True, nullable=False)
     generation_kwh = Column(Float, nullable=False)
     consumption_kwh = Column(Float, nullable=False)
@@ -166,7 +167,7 @@ class EnergyData(Base):
     source = Column(Enum(EnergyDataSource, name = 'data-sorce-enum'), nullable=False, default=EnergyDataSource.SIMULATION)  # simulator or IoT
     simulation_run_id = Column(UUID(as_uuid=True), ForeignKey("simulation_runs.id"), nullable=True)
 
-    user = relationship("User", back_populates="energy_data")
+    user_system = relationship("UserSystem", back_populates="energy_data")
 
     __table_args__ = (
         UniqueConstraint("user_id", "timestamp", name="unique_user_timestamp"),
