@@ -73,6 +73,15 @@ class SystemType(str, MyEnum):
     OFF_GRID = "off_grid"
     HYBRID = "hybrid"
 
+class WalletType(str, MyEnum):
+    FS = "FS"        # FileSystemWallet
+    VAULT = "VAULT"
+    KMS = "KMS"
+
+class FabricIdentityStatus(str, MyEnum):
+    ACTIVE = "ACTIVE"
+    REVOKED = "REVOKED"
+
 
 class User(Base):
     __tablename__ = "users"
@@ -85,9 +94,10 @@ class User(Base):
     username = Column(String(100), nullable=False, unique=True)
     password_hash = Column(String(255), nullable=False)  # store hashed password
     role = Column(Enum(UserRole), default=UserRole.CONSUMER, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True),server_default=func.now(),onupdate=func.now())
     cluster_id = Column(UUID(as_uuid=True), ForeignKey('user_cluster.id'), nullable=True, index=True)
 
+    fabric_identities = relationship("FabricIdentity",back_populates="user",cascade="all, delete-orphan")
     system = relationship("UserSystem", back_populates="user", uselist=False)
     balances = relationship("Balance", back_populates="user")
     #1 user can only have 1 cluster
@@ -119,17 +129,22 @@ class UserSystem(Base):
 
 class UserCluster(Base):
     __tablename__ = 'user_cluster'
+
     id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     radius = Column(Float, nullable=False)
     location = Column(Geometry('POINT', srid=4326), nullable=False)
     num_users = Column(Integer, nullable=False, default=0)
-    weather_data_id = Column(UUID(as_uuid=True), ForeignKey('weather_data.id'), nullable=True, index=True)
     users = relationship("User", back_populates="cluster")
-    weather_data = relationship("WeatherData", back_populates="cluster") 
+    weather_data = relationship(
+        "WeatherData",
+        back_populates="cluster",
+        cascade="all, delete-orphan"
+    )
 
 
 class WeatherData(Base):
     __tablename__ = "weather_data"
+
     id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     temp = Column(Float, nullable=False, default=0.0)
     pressure = Column(Float, nullable=False, default=0.0)
@@ -141,7 +156,6 @@ class WeatherData(Base):
     wind_speed = Column(Float, nullable=False, default=0.0)
     is_expired = Column(Boolean, nullable=False, default=False)
     cluster_id = Column(UUID(as_uuid=True), ForeignKey('user_cluster.id'), nullable=False, index=True)
-    # link back
     cluster = relationship("UserCluster", back_populates="weather_data")
 
 class SimulationRun(Base):
@@ -156,7 +170,6 @@ class SimulationRun(Base):
 
 class EnergyData(Base):
     __tablename__ = "energy_data"
-    __table_args__ = (UniqueConstraint("user_id", "timestamp", name="unique_user_timestamp"),)
 
     id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     user_system_id = Column(UUID(as_uuid=True), ForeignKey("user_systems.id"), nullable=False)
@@ -170,7 +183,6 @@ class EnergyData(Base):
     user_system = relationship("UserSystem", back_populates="energy_data")
 
     __table_args__ = (
-        UniqueConstraint("user_id", "timestamp", name="unique_user_timestamp"),
         CheckConstraint("generation_kwh >= 0", name="positive_generation"),
         CheckConstraint("consumption_kwh >= 0", name="positive_consumption"),
         CheckConstraint("surplus_kwh = generation_kwh - consumption_kwh", name="correct_surplus"),
@@ -249,3 +261,21 @@ class TradeTick(Base):
     def total_value_traded(self):
         """Sum of all money traded in this tick"""
         return sum(t.total_amount for t in self.transactions if t.transaction_status == TransactionStatus.COMPLETED)
+    
+class FabricIdentity(Base):
+    __tablename__ = "fabric_identities"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True),ForeignKey("users.id", ondelete="CASCADE"),nullable=False)
+    fabric_identity = Column(String(255), unique=True, nullable=False)
+    msp_id = Column(String(64), nullable=False)
+    is_admin = Column(Boolean, default=False)
+    wallet_type = Column(Enum(WalletType),nullable=False,default=WalletType.FS)
+    status = Column(Enum(FabricIdentityStatus),nullable=False,default=FabricIdentityStatus.ACTIVE)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="fabric_identities")
+    __table_args__ = (
+    UniqueConstraint("fabric_identity", "msp_id"),
+)
+

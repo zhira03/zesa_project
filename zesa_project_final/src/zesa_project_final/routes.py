@@ -1,6 +1,7 @@
 from decimal import Decimal, getcontext
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Request, File, UploadFile
 from psycopg2 import IntegrityError
+import httpx
 from shapely import Point
 from sqlalchemy.orm import Session,joinedload, aliased
 from dependencies import get_db
@@ -13,89 +14,167 @@ from weatherInfo import assign_new_user_to_cluster
 getcontext().prec = 12
 
 router = APIRouter()
+#register on db then on chain
+@router.post(
+    "/api/v1/auth/register/",
+    status_code=status.HTTP_201_CREATED,
+    response_model=RegisterUserResponse
+)
+async def register_user(
+    user: RegisterUser,
+    db: Session = Depends(get_db),
+     
+):
+    # #Admin-only
+    # if current_user.role != UserRole.ADMIN:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Only admins can register users"
+    #     )
 
-@router.post('/api/v1/auth/register/', status_code=status.HTTP_201_CREATED, response_model=RegisterUserResponse)
-def register_user(user: RegisterUser, db:Session = Depends(get_db)):
-    #check if username or email already exists
-    existing_user = db.query(User).filter((User.username == user.username) | (User.email == user.email)).first()
+    # Check uniqueness
+    existing_user = db.query(User).filter(
+        (User.username == user.username) |
+        (User.email == user.email)
+    ).first()
     if existing_user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username or Email already exists")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username or Email already exists"
+        )
     
-    try:
-        # Hash the password
-        hashed_password = get_password_hash(user.password)
+    role = "Consumer"
+    if user.role in [UserRole.PRODUCER, UserRole.PROSUMER]:
+        role = "Prosumer"
 
-        # Build geometry from location
+    try:
+        # ---------- 1️⃣ Register user on Fabric FIRST ----------
+        fabric_user_id = f"user_{user.username}"
+
+        async with httpx.AsyncClient() as client:
+            # --- STEP A: Create the Identity in the Node Wallet ---
+            enroll_res = await client.post(
+                "http://localhost:4000/fabric/register-identity",
+                json={"userId": fabric_user_id}
+            )
+            if enroll_res.status_code != 200:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Fabric CA enrollment failed: {enroll_res.text}"
+                )
+
+            # --- STEP B: Submit Transaction using that NEW identity ---
+            r = await client.post(
+                "http://localhost:4000/fabric/submit",
+                json={
+                    "channel": "mychannel",
+                    "chaincode": "energy",
+                    "function": "RegisterUser",
+                    "args": [fabric_user_id, role],
+                    "identity": fabric_user_id
+                },
+                timeout=10
+            )
+
+        payload_text = r.text
+
+        if r.status_code != 200:
+            if "already registered" in payload_text.lower():
+                payload = r.json()
+                print("FABRIC RESPONSE:", payload)
+            else:
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Fabric registration failed: {payload_text}"
+                )
+        else:
+            payload = r.json()
+            print("FABRIC RESPONSE:", payload)
+
+        # ----------Create DB records ----------
+        hashed_password = get_password_hash(user.password)
         user_location = Point(user.location.lon, user.location.lat)
-        
+
         new_user = User(
             name=user.name,
             surname=user.surname,
             username=user.username,
             email=user.email,
             role=user.role,
-            password_hash=hashed_password, #hashed in the model
-            location = user_location
+            password_hash=hashed_password,
+            location=user_location
         )
         db.add(new_user)
         db.flush()
-        db.refresh(new_user)
 
-        # assign to cluster immediately
+        # Cluster assignment
         cluster_id = assign_new_user_to_cluster(db, new_user)
 
-        if user.role in [UserRole.PRODUCER, UserRole.PROSUMER]:
-            if user.system is not None:
-                new_system = models.UserSystem(
-                    user_id=new_user.id,
-                    panel_wattage=user.system.panel_wattage,
-                    panel_count=user.system.panel_count,
-                    battery_capacity_kwh=user.system.battery_capacity_kwh,
-                    inverter_capacity_kw=user.system.inverter_capacity_kw,
-                    system_type=user.system.system_type,
-                    installed_date=user.system.installation_date or datetime.utcnow(),
-                    household_size=user.system.household_size
-                )
-                db.add(new_system)
-                new_user.system = new_system
+        # Optional energy system
+        systemResponse = None
+        if user.role in [UserRole.PRODUCER, UserRole.PROSUMER] and user.system:
+            new_system = models.UserSystem(
+                user_id=new_user.id,
+                panel_wattage=user.system.panel_wattage,
+                panel_count=user.system.panel_count,
+                battery_capacity_kwh=user.system.battery_capacity_kwh,
+                inverter_capacity_kw=user.system.inverter_capacity_kw,
+                system_type=user.system.system_type,
+                installed_date=user.system.installation_date or datetime.utcnow(),
+                household_size=user.system.household_size
+            )
+            db.add(new_system)
 
-                systemResponse = UserSystemResponse(
-                    panel_count=new_system.panel_count,
-                    panel_wattage=new_system.panel_wattage,
-                    battery_capacity_kwh=new_system.battery_capacity_kwh,
-                    inverter_capacity_kw=new_system.inverter_capacity_kw,
-                    system_type=new_system.system_type,
-                    household_size=new_system.household_size
-                )
-        
-        default_balance = models.Balance(
+            systemResponse = UserSystemResponse(
+                panel_count=new_system.panel_count,
+                panel_wattage=new_system.panel_wattage,
+                battery_capacity_kwh=new_system.battery_capacity_kwh,
+                inverter_capacity_kw=new_system.inverter_capacity_kw,
+                system_type=new_system.system_type,
+                household_size=new_system.household_size
+            )
+
+        # Default balance
+        db.add(models.Balance(
             user_id=new_user.id,
             balance_currency=Currency.CREDITS,
             balance_value=0.0
+        ))
+
+        # Fabric identity mapping
+        fabric_identity = FabricIdentity(
+            user_id=new_user.id,
+            fabric_identity=fabric_user_id,
+            msp_id="Org1MSP",
+            is_admin=False,
+            status=FabricIdentityStatus.ACTIVE,
         )
-        db.add(default_balance)
+        db.add(fabric_identity)
 
         db.commit()
-        #flush the userID and send to chain
-        #chain expects: RegisterUser(userID(string), role(string))
 
         return RegisterUserResponse(
             user_id=new_user.id,
             name=new_user.name,
             role=new_user.role,
             created_at=new_user.created_at,
-            system=systemResponse if user.role in [UserRole.PRODUCER, UserRole.PROSUMER] and user.system else None,
+            system=systemResponse,
             cluster_id=cluster_id
         )
-    
-    except HTTPException:
-        raise
+
+    except HTTPException as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Register User failed here: {str(e)}"
+        )
     except Exception as e:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Register User failed: {str(e)}"
         )
-
+    
 @router.post('/api/v1/auth/login/', status_code=status.HTTP_200_OK, response_model=LoginUserResponse)
 def login_user(login_data: LoginUser, db: Session = Depends(get_db)):
     try:
@@ -148,7 +227,7 @@ def login_user(login_data: LoginUser, db: Session = Depends(get_db)):
         )
     
 
-@router.post('/api/v1/users/{user_id}/', status_code=status.HTTP_200_OK, response_model=UserInfo)
+@router.get('/api/v1/users/{user_id}/', status_code=status.HTTP_200_OK, response_model=UserInfo)
 def get_user(user_id:uuid.UUID, db: Session = Depends(get_db)):
     exists = db.query(User).filter(User.id == user_id).first()
     if not exists:
