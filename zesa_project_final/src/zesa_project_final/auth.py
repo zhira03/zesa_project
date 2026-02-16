@@ -10,12 +10,13 @@ import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer
 import os
 from functools import wraps
 
 from dependencies import get_db
-from models import User, UserRole  
+from models import User, UserRole
+from pydanticModels import UserTokenData  
 
 # Configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "your-super-secret-key-change-this-in-production")
@@ -31,6 +32,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # HTTP Bearer token scheme
 security = HTTPBearer()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 class AuthenticationError(Exception):
     """Custom exception for authentication errors"""
@@ -299,10 +301,7 @@ def create_tokens_for_user(user: User) -> dict:
 # FASTAPI DEPENDENCIES
 # =====================================
 
-async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
-) -> User:
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security),db: Session = Depends(get_db)) -> User:
     """
     FastAPI dependency to get current authenticated user
     
@@ -334,12 +333,9 @@ async def get_current_user(
     except AuthenticationError:
         raise credentials_exception
 
-async def get_current_active_user(
-    current_user: User = Depends(get_current_user)
-) -> User:
+async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
     """
     FastAPI dependency to get current active user
-    Add additional checks here if you have user status fields
     """
     
     return current_user
@@ -548,3 +544,7 @@ async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
     login_tracker.record_successful_login(user_credentials.email)
     return create_tokens_for_user(user)
 """
+
+def get_token_data(token: str = Depends(oauth2_scheme)) -> UserTokenData:
+    payload = verify_token(token)
+    return UserTokenData(**payload)

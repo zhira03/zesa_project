@@ -6,6 +6,10 @@ from datetime import date
 from models import *
 import uuid
 
+class UserTokenData(BaseModel):
+    username: str
+    role: str
+
 class UserSystem(BaseModel):
     panel_wattage : float
     panel_count : int
@@ -41,7 +45,6 @@ class RegisterUserResponse(BaseModel):
     user_id: uuid.UUID
     name: str
     role: UserRole
-    created_at: datetime
     system : Optional[UserSystemResponse] = None
     cluster_id: uuid.UUID
 
@@ -116,8 +119,6 @@ class UserInfo(BaseModel):
         orm_mode = True
 
 class EnergyDataCreate(BaseModel):
-    simRunName: str
-    seed: int
     user_system_id: uuid.UUID
     timestamp: datetime
     generation_kwh: float
@@ -181,3 +182,13 @@ class WeatherResponse(BaseModel):
     visibility: int
     wind_speed: float
 
+class AllEnergy(BaseModel):
+    prosumer_name: str
+    kwh: float
+    district: str
+    price: float
+    rating: float
+
+class StartTransaction(BaseModel):
+    kwh:float
+    assetID: str

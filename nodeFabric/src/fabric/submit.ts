@@ -4,9 +4,11 @@ import { getGateway } from "./gateway";
 
 export async function submitTransaction(req: Request, res: Response) {
   try {
+    console.log("Submit Transaction Endpoint hit: Starting transaction now:")
     const { channel, chaincode, function: fn, args, identity } = req.body;
 
     const gateway = await getGateway(identity);
+    console.log(`Gateway: ${gateway}`);
     const network = await gateway.getNetwork(channel);
     const contract = network.getContract(chaincode);
 

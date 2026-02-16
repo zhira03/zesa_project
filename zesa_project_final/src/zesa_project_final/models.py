@@ -107,7 +107,7 @@ class User(Base):
 class UserSystem(Base):
     __tablename__ = "user_systems"
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True) #this is the chain AssetID
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, unique=True)
     panel_wattage = Column(Float, nullable=True)  # wattage per panel
     panel_count = Column(Integer, nullable=True)
@@ -135,6 +135,7 @@ class UserCluster(Base):
     location = Column(Geometry('POINT', srid=4326), nullable=False)
     num_users = Column(Integer, nullable=False, default=0)
     users = relationship("User", back_populates="cluster")
+    #TODO: dont forget to add the cluster name!!, it'll be the district/neighbour hood name
     weather_data = relationship(
         "WeatherData",
         back_populates="cluster",
@@ -179,6 +180,7 @@ class EnergyData(Base):
     surplus_kwh = Column(Float, nullable=False)  # generation - consumption
     source = Column(Enum(EnergyDataSource, name = 'data-sorce-enum'), nullable=False, default=EnergyDataSource.SIMULATION)  # simulator or IoT
     simulation_run_id = Column(UUID(as_uuid=True), ForeignKey("simulation_runs.id"), nullable=True)
+    is_captured = Column(Boolean,nullable = False, default = False)
 
     user_system = relationship("UserSystem", back_populates="energy_data")
 
@@ -214,8 +216,8 @@ class Transaction(Base):
     __tablename__ = "transactions"
 
     id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
-    from_user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    to_user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    seller = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    buyer = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow, index=True)
     kwh = Column(Float, nullable=False)
     price_per_kwh = Column(Float, nullable=False)
@@ -227,12 +229,12 @@ class Transaction(Base):
     
     # prevent self-trading
     __table_args__ = (
-        CheckConstraint("from_user_id != to_user_id", name="no_self_trading"),
+        CheckConstraint("seller != buyer", name="no_self_trading"),
     )
 
     # optional relationships (self joins)
-    from_user = relationship("User", foreign_keys=[from_user_id])
-    to_user = relationship("User", foreign_keys=[to_user_id])
+    from_user = relationship("User", foreign_keys=[seller])
+    to_user = relationship("User", foreign_keys=[buyer])
 
     @validates('total_amount')
     def validate_total_amount(self, key, value):

@@ -5,14 +5,17 @@ import path from 'path';
 
 export async function registerAndEnrollUser(userId: string) {
     // 1. Load Connection Profile
-    const ccpPath = path.resolve(__dirname, '..', 'connection-profile.json');
+    // /home/zhira03/Desktop/side_ting/zesa_project/nodeFabric
+    const ccpPath = path.resolve(
+        "/home/zhira03/Desktop/side_ting/zesa_project/nodeFabric/connection-profile.json"
+    );
     const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
     // 2. Connect to the CA
     const caInfo = ccp.certificateAuthorities['ca.org1.example.com'];
     const ca = new FabricCAServices(caInfo.url);
 
-    // 3. Open the wallet you created with your admin script
+    // 3. Open the admin wallet 
     const walletPath = path.join(process.cwd(), 'wallets');
     const wallet = await Wallets.newFileSystemWallet(walletPath);
 
@@ -23,6 +26,8 @@ export async function registerAndEnrollUser(userId: string) {
         return;
     }
 
+    console.log(`Identity ${userId} Doesnt Exist. moving to next stage`);
+
     // 4. Get the Admin to sign the registration request
     const adminIdentity = await wallet.get('admin');
     if (!adminIdentity) {
@@ -31,6 +36,7 @@ export async function registerAndEnrollUser(userId: string) {
 
     const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
     const adminUser = await provider.getUserContext(adminIdentity, 'admin');
+    console.log(`Admin Identity found and User accepted`);
 
     // 5. Register & Enroll
     // This tells the CA: "Register this ID" and immediately "Give me the certs"
@@ -40,10 +46,14 @@ export async function registerAndEnrollUser(userId: string) {
         role: 'client'
     }, adminUser);
 
+    console.log(`Identity ${userId} registered`);
+
     const enrollment = await ca.enroll({
         enrollmentID: userId,
         enrollmentSecret: secret
     });
+
+    console.log(`Identity ${userId} enrolled`);
 
     const x509Identity: X509Identity = {
         credentials: {
@@ -53,7 +63,7 @@ export async function registerAndEnrollUser(userId: string) {
         mspId: 'Org1MSP',
         type: 'X.509',
     };
-
+userIdentity
     await wallet.put(userId, x509Identity);
     console.log(`Successfully enrolled ${userId}`);
 }

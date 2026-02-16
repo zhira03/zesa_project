@@ -1,30 +1,25 @@
 from decimal import Decimal, getcontext
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Request, File, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Query, Request, File, UploadFile
 from psycopg2 import IntegrityError
 import httpx
 from shapely import Point
 from sqlalchemy.orm import Session,joinedload, aliased
+from chainUtils import initiate_transaction, publishEnergy, getEnergy
 from dependencies import get_db
 from pydanticModels import *
 from auth import *
 import models
-from utils import _get_or_create_balance
+from utils import _get_or_create_balance, verify_user
 from weatherInfo import assign_new_user_to_cluster
+from geoalchemy2.elements import WKTElement
 
 getcontext().prec = 12
 
 router = APIRouter()
 #register on db then on chain
-@router.post(
-    "/api/v1/auth/register/",
-    status_code=status.HTTP_201_CREATED,
-    response_model=RegisterUserResponse
-)
-async def register_user(
-    user: RegisterUser,
-    db: Session = Depends(get_db),
-     
-):
+@router.post("/api/v1/auth/register/",status_code=status.HTTP_201_CREATED,response_model=RegisterUserResponse)
+async def register_user(user: RegisterUser,db: Session = Depends(get_db)):
+
     # #Admin-only
     # if current_user.role != UserRole.ADMIN:
     #     raise HTTPException(
@@ -54,7 +49,7 @@ async def register_user(
         async with httpx.AsyncClient() as client:
             # --- STEP A: Create the Identity in the Node Wallet ---
             enroll_res = await client.post(
-                "http://localhost:4000/fabric/register-identity",
+                "http://localhost:4000/fabric/registerIdentity",
                 json={"userId": fabric_user_id}
             )
             if enroll_res.status_code != 200:
@@ -93,7 +88,9 @@ async def register_user(
 
         # ----------Create DB records ----------
         hashed_password = get_password_hash(user.password)
-        user_location = Point(user.location.lon, user.location.lat)
+        userLocation = Point(user.location.lon, user.location.lat)
+        user_location = WKTElement(userLocation.wkt, srid=4326)
+        # user_location = Point(user.location.lon, user.location.lat)here
 
         new_user = User(
             name=user.name,
@@ -157,7 +154,6 @@ async def register_user(
             user_id=new_user.id,
             name=new_user.name,
             role=new_user.role,
-            created_at=new_user.created_at,
             system=systemResponse,
             cluster_id=cluster_id
         )
@@ -351,14 +347,14 @@ def add_energy_data(payload: EnergyDataCreate, db: Session = Depends(get_db)):
 
 # POST /energy-data/batch → Bulk ingestion
 # get energy generation and consumption from the Mesa simulation
+# call function to then add the published energy to the chain per prosumer
 @router.post("/api/v1/energy-data/batch/", status_code=status.HTTP_201_CREATED, response_model=List[EnergyDataResponse])
-def add_energy_data_batch(payload: List[EnergyDataCreate], db: Session = Depends(get_db)):
+def add_energy_data_batch(payload: List[EnergyDataCreate], background_tasks: BackgroundTasks,db: Session = Depends(get_db)):
     records = []
     #create a simulation_run entry
     simulationRun = models.SimulationRun(
-        name = payload.simRunName,
-        seed = payload.seed,
-        created_at = payload.timestamp,
+        name = "First Run",
+        seed = 10,
     )
 
     #create the entry
@@ -377,7 +373,7 @@ def add_energy_data_batch(payload: List[EnergyDataCreate], db: Session = Depends
             timestamp=entry.timestamp,
             generation_kwh=entry.generation_kwh,
             consumption_kwh=entry.consumption_kwh,
-            surplus = surplus,
+            surplus_kwh = surplus,
             source = EnergyDataSource.SIMULATION,
             simulation_run_id = simulationRun.id
         )
@@ -392,20 +388,137 @@ def add_energy_data_batch(payload: List[EnergyDataCreate], db: Session = Depends
         db.rollback()
         raise HTTPException(status_code=400, detail="Duplicate entry in batch ingestion")
     
-    #push energy made to chain
-    #chain expects: PublishEnergy(assetID,prosumerID,kwh,price)
-    #assetID is coming from UserSystem.id, so we need to pull that from the query
+    background_tasks.add_task(
+        publishEnergy,
+        db = db
+    )
 
     return [
         EnergyDataResponse(
             id=r.id,
-            user_id=r.user_id,
+            user_id=r.user_system_id,
             timestamp=r.timestamp,
             generation_kwh=r.generation_kwh,
             consumption_kwh=r.consumption_kwh,
             surplus_kwh=r.surplus_kwh
         ) for r in records
     ]
+# get all available power from chain
+@router.get("/api/v1/get/energy/", status_code=status.HTTP_200_OK, response_model=List[AllEnergy])
+async def get_available_power(token_data: UserTokenData = Depends(get_token_data),db: Session = Depends(get_db)):
+    # get current power from chain
+    # use user identity for chain auth
+
+    user = verify_user(token_data, db)
+
+    fab_identity = db.query(models.FabricIdentity).filter(
+        models.FabricIdentity.user_id == user.id
+    ).first()
+    
+    if not fab_identity:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"User not found: {user.username}"
+        )
+    
+    try:
+        chain_response = await getEnergy(user_fab=fab_identity.fabric_identity)
+        
+        # The response should be: {"status": "SUCCESS", "result": [...]}
+        if chain_response.get("status") != "SUCCESS":
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Blockchain query failed"
+            )
+        
+        energy_data = chain_response.get("result", [])
+        placeholder_district = "Hillside"
+        
+        return [
+            AllEnergy(
+                prosumer_name=item["producerId"],
+                kwh=item["kwh"],
+                price=item["price"],
+                rating = 4.5,
+                district=placeholder_district
+            ) for item in energy_data
+        ]
+
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching energy data: {str(e)}"
+        )
+       
+# initiate transaction
+@router.post("/api/v1/start/transaction/", status_code=status.HTTP_201_CREATED)
+async def start_transaction(trans:StartTransaction, token_data:UserTokenData = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    """
+    chain needs: txID string, consumerID string, assetID string, kwhRequested float64
+    """
+
+    user = verify_user(token_data, db)
+    fab_identity = db.query(models.FabricIdentity).filter(models.FabricIdentity.user_id == user.id).first()
+    if not fab_identity:
+        raise HTTPException(
+            status_code = status.HTTP_401_UNAUTHORIZED,
+            detail = f"User not Found {user.username}"
+        )
+    
+    asset = db.query(models.UserSystem).filter(models.UserSystem.id == trans.assetID).first()
+    if not asset:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Asset not found"
+        )
+    
+    prosumer = db.query(models.User).join(models.UserSystem).filter(models.UserSystem.id == trans.assetID).first()
+    
+    try:
+        new_trans = models.Transaction(
+            seller = prosumer.id,
+            buyer = user.id,
+            kwh = trans.kwh,
+            price_per_kwh = 0.12,
+            total_amount = (trans.kwh * 0.12),
+            transaction_status = TransactionStatus.PENDING
+        )
+        db.add(new_trans)
+        db.flush()
+
+        chain_response = await initiate_transaction(
+            user_fab=fab_identity.fabric_identity,
+            transID=str(new_trans.id),
+            consumerID = user.username,
+            assetID = str(trans.assetID),
+            kwhRequested=trans.kwh
+        )
+
+        # The response should be: {"status": "SUCCESS", "result": [...]}
+        if chain_response.get("status") != "SUCCESS":
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Blockchain trabsaction failed: {chain_response.get('error', 'Unkown error')}"
+            )
+        
+        db.commit()
+        return {
+            "message": "Transaction initiated successfully",
+            "transaction_id": new_trans.id,
+            "blockchain_response": chain_response
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error here: {str(e)}"
+        )
+
+
 
 
 
