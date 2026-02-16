@@ -1,0 +1,7 @@
+AgentType,year_installed,max_power_output,battery_storage_capacity,average_daily_consumption,peak_usage_demand,grid_x,grid_y
+SolarPanel,2018.0,5.5,10.0,,,5,5
+Consumer,,,,15.0,3.0,5,5
+SolarPanel,2020.0,8.0,15.0,,,10,12
+Consumer,,,,12.0,2.5,10,12
+SolarPanel,2019.0,6.0,5.0,,,2,8
+Consumer,,,,18.0,4.0,2,8
