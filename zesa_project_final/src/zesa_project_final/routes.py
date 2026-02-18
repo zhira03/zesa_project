@@ -13,6 +13,7 @@ from utils import _get_or_create_balance, verify_user
 from weatherInfo import assign_new_user_to_cluster
 from geoalchemy2.elements import WKTElement
 
+
 getcontext().prec = 12
 
 router = APIRouter()
@@ -348,61 +349,9 @@ def add_energy_data(payload: EnergyDataCreate, db: Session = Depends(get_db)):
 # POST /energy-data/batch → Bulk ingestion
 # get energy generation and consumption from the Mesa simulation
 # call function to then add the published energy to the chain per prosumer
-@router.post("/api/v1/energy-data/batch/", status_code=status.HTTP_201_CREATED, response_model=List[EnergyDataResponse])
-def add_energy_data_batch(payload: List[EnergyDataCreate], background_tasks: BackgroundTasks,db: Session = Depends(get_db)):
-    records = []
-    #create a simulation_run entry
-    simulationRun = models.SimulationRun(
-        name = "First Run",
-        seed = 10,
-    )
+# @router.post("/api/v1/energy-data/batch/", status_code=status.HTTP_201_CREATED, response_model=List[EnergyDataResponse])
 
-    #create the entry
-    db.add(simulationRun)
-    db.flush()
 
-    for entry in payload:
-        user = db.query(models.UserSystem).filter(models.UserSystem.id == entry.user_system_id).first()
-        if not user:
-            raise HTTPException(status_code=404, detail=f"User {entry.user_system_id} not found")
-
-        surplus = entry.generation_kwh - entry.consumption_kwh
-
-        record = models.EnergyData(
-            user_system_id=entry.user_system_id,
-            timestamp=entry.timestamp,
-            generation_kwh=entry.generation_kwh,
-            consumption_kwh=entry.consumption_kwh,
-            surplus_kwh = surplus,
-            source = EnergyDataSource.SIMULATION,
-            simulation_run_id = simulationRun.id
-        )
-        records.append(record)
-
-    db.add_all(records)
-    try:
-        db.commit()
-        for r in records:
-            db.refresh(r)
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Duplicate entry in batch ingestion")
-    
-    background_tasks.add_task(
-        publishEnergy,
-        db = db
-    )
-
-    return [
-        EnergyDataResponse(
-            id=r.id,
-            user_id=r.user_system_id,
-            timestamp=r.timestamp,
-            generation_kwh=r.generation_kwh,
-            consumption_kwh=r.consumption_kwh,
-            surplus_kwh=r.surplus_kwh
-        ) for r in records
-    ]
 # get all available power from chain
 @router.get("/api/v1/get/energy/", status_code=status.HTTP_200_OK, response_model=List[AllEnergy])
 async def get_available_power(token_data: UserTokenData = Depends(get_token_data),db: Session = Depends(get_db)):
@@ -505,6 +454,7 @@ async def start_transaction(trans:StartTransaction, token_data:UserTokenData = D
                 detail=f"Blockchain trabsaction failed: {chain_response.get('error', 'Unkown error')}"
             )
         
+        asset.is_available = False
         db.commit()
         return {
             "message": "Transaction initiated successfully",

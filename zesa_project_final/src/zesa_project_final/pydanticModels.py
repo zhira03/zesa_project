@@ -120,7 +120,6 @@ class UserInfo(BaseModel):
 
 class EnergyDataCreate(BaseModel):
     user_system_id: uuid.UUID
-    timestamp: datetime
     generation_kwh: float
     consumption_kwh: float
 

@@ -478,19 +478,19 @@ Widget _buildPrimaryButton(String text, VoidCallback? onPressed) {
                   width: screenWidth * 0.85,
                   height: screenHeight * 0.8,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: Provider.of<ThemeProvider>(context).isDarkMode
-                        ? [
-                            const Color.fromARGB(127, 60, 60, 80),   
-                            const Color.fromARGB(127, 20, 20, 40),   
-                          ]
-                        : [
-                            const Color.fromARGB(125, 134, 128, 170), 
-                            const Color.fromARGB(126, 51, 50, 54),     
-                          ],
-                    ),
+                    // gradient: LinearGradient(
+                    //   begin: Alignment.topCenter,
+                    //   end: Alignment.bottomCenter,
+                    //   colors: Provider.of<ThemeProvider>(context).isDarkMode
+                    //     ? [
+                    //         const Color.fromARGB(127, 60, 60, 80),   
+                    //         const Color.fromARGB(200, 31, 184, 39),   
+                    //       ]
+                    //     : [
+                    //         const Color.fromARGB(125, 134, 128, 170), 
+                    //         const Color.fromARGB(200, 31, 184, 39),     
+                    //       ],
+                    // ),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -553,11 +553,16 @@ Widget _buildPrimaryButton(String text, VoidCallback? onPressed) {
                 
                       //padding based on whether its login or signup
                       if(_isLogin == true)
-                      SizedBox(height: screenHeight * 0.03,),
+                      SizedBox(height: screenHeight * 0.05,),
+                      // const Spacer(),
+
                       // container will both login and signup logic
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: SizedBox(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.transparent
+                          ),
                           width: double.infinity,
                           child: SingleChildScrollView(
                             physics: AlwaysScrollableScrollPhysics(),

@@ -8,6 +8,7 @@ class GenerationStats extends StatefulWidget {
   final double batteryCapacity;
   final double generatedkWh;
   final double exportingToGrid;
+  final double efficiency;
 
   const GenerationStats({
     Key? key,
@@ -16,7 +17,8 @@ class GenerationStats extends StatefulWidget {
     required this.inverterCapacity,
     required this.batteryCapacity,
     required this.generatedkWh,
-    required this.exportingToGrid,
+    required this.exportingToGrid, 
+    required this.efficiency,
   }) : super(key: key);
 
   @override
@@ -51,7 +53,7 @@ class _GenerationStatsState extends State<GenerationStats>
   @override
   Widget build(BuildContext context) {
     final totalCapacity = _panelPower(widget.panelCount, widget.panelSize);
-    final efficiency = (widget.generatedkWh / totalCapacity * 100).clamp(0, 100);
+    final efficiency = widget.efficiency;
 
     return Container(
       width: 230,
@@ -320,14 +322,14 @@ class _GenerationStatsState extends State<GenerationStats>
                       // Export to grid
                       _buildStatRow(
                         icon: Icons.public,
-                        label: 'Sharing to Grid',
+                        label: 'Ready to Export to Grid',
                         value: '${widget.exportingToGrid.toStringAsFixed(2)} kWh',
                         color: const Color(0xFF00ff88),
                         showPulse: widget.exportingToGrid > 0,
                       ),
                       const SizedBox(height: 12),
                       
-                      // System specs
+                      // current System specs
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -340,7 +342,7 @@ class _GenerationStatsState extends State<GenerationStats>
                         ),
                         child: Column(
                           children: [
-                            _buildSpecRow('Panel Capacity', '${totalCapacity.toStringAsFixed(2)} kW'),
+                            _buildSpecRow('Panel Output', '${totalCapacity.toStringAsFixed(2)} kW'),
                             const SizedBox(height: 8),
                             _buildSpecRow('Inverter', '${widget.inverterCapacity} kVA'),
                             const SizedBox(height: 8),

@@ -9,8 +9,9 @@ load_dotenv()
 localTestDb1 = "postgresql://postgres:newpassword@localhost:5432/localDB1"
 localTestDb2 = "postgresql://postgres:newpassword@localhost:5432/localDB2"
 localTestDb3= "postgresql://postgres:newpassword@localhost:5432/fabric2"
+fabric1= "postgresql://postgres:newpassword@localhost:5432/fabric1"
 
-engine = create_engine(localTestDb3)
+engine = create_engine(fabric1)
 with engine.connect() as conn:
     conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis;"))
     conn.commit()

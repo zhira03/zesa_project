@@ -1,3 +1,6 @@
+import 'package:WattTrade/components/batteryHelper.dart';
+import 'package:WattTrade/components/inverterHelper.dart';
+import 'package:WattTrade/components/panelHelper.dart';
 import 'package:WattTrade/components/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +14,11 @@ class SystemStats extends StatefulWidget {
 }
 
 class _SystemStatsState extends State<SystemStats> with TickerProviderStateMixin{
-
   final pageView = PageController();
+  String solarType = 'Monocrystalline';
+  String funFact = '';
+  int panelCount = 2;
+  double panelSize = 100;
 
 
   @override
@@ -46,113 +52,130 @@ class _SystemStatsState extends State<SystemStats> with TickerProviderStateMixin
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
+
+              // solar panels section
               SizedBox(
                 height: 400,
                 child: PageView(
                   controller: pageView,
                   children: [
-                    Container(
-                      color: Colors.red,
+                    SizedBox(
                       height: 80,
                       width: 80,
-                      child: Center(
+                      child: SizedBox(
                         child: Stack(
                           children: [
                             Positioned.fill(
-                              child: Image.asset(
-                                Provider.of<ThemeProvider>(context).isDarkMode
-                                  ? 'assets/prosumer/solarPanels1.jpg'
-                                  : 'assets/prosumer/solarPanels1.jpg',
-                                height: 320,
-                                fit: BoxFit.fitWidth,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    height: 50,
-                                    width: 200,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: const Icon(
-                                      Icons.solar_power,
-                                      size: 60,
-                                      color: Colors.white54,
-                                    ),
-                                  );
-                                },
+                              child: Opacity(
+                                opacity: 0.3,
+                                child: Image.asset(
+                                  Provider.of<ThemeProvider>(context).isDarkMode
+                                    ? 'assets/prosumer/solarPanels1.jpg'
+                                    : 'assets/prosumer/solarPanels1.jpg',
+                                  height: 320,
+                                  fit: BoxFit.fitWidth,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 50,
+                                      width: 200,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Icon(
+                                        Icons.solar_power,
+                                        size: 60,
+                                        color: Colors.white54,
+                                      )
+                                    );
+                                  },
+                                ),
                               ),
                             ),
+                            SolarPanelsScreen()
                           ],
                         )
                       ),
                     ),
-                    Container(
-                      color: Colors.green,
+
+                    // inverter section
+                    SizedBox(
                       height: 80,
                       width: 80,
-                      //
                       child: Center(
                         child: Stack(
                           children: [
                             Positioned.fill(
-                              child: Image.asset(
-                                Provider.of<ThemeProvider>(context).isDarkMode
-                                  ? 'assets/prosumer/inverter1.jpg'
-                                  : 'assets/prosumer/inverter1.jpg',
-                                height: 320,
-                                fit: BoxFit.fitWidth,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    height: 50,
-                                    width: 200,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: const Icon(
-                                      Icons.solar_power,
-                                      size: 60,
-                                      color: Colors.white54,
-                                    ),
-                                  );
-                                },
+                              child: Opacity(
+                                opacity: 0.3,
+                                child: Image.asset(
+                                  Provider.of<ThemeProvider>(context).isDarkMode
+                                    ? 'assets/prosumer/inverter1.jpg'
+                                    : 'assets/prosumer/inverter1.jpg',
+                                  height: 320,
+                                  fit: BoxFit.fitWidth,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 50,
+                                      width: 200,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Icon(
+                                        Icons.solar_power,
+                                        size: 60,
+                                        color: Colors.white54,
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
+                            InverterSectionScreen()
                           ],
                         )
                       ),
                     ),
-                    Container(
-                      color: Colors.blue,
+
+                    //batteries section
+                    SizedBox(
                       height: 80,
                       width: 80,
                       child: Center(
                         child: Stack(
                           children: [
                             Positioned.fill(
-                              child: Image.asset(
-                                Provider.of<ThemeProvider>(context).isDarkMode
-                                  ? 'assets/prosumer/battery1.jpg'
-                                  : 'assets/prosumer/battery2.jpg',
-                                height: 320,
-                                fit: BoxFit.fitWidth,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    height: 50,
-                                    width: 200,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: const Icon(
-                                      Icons.solar_power,
-                                      size: 60,
-                                      color: Colors.white54,
-                                    ),
-                                  );
-                                },
+                              child: Opacity(
+                                opacity: 0.3,
+                                child: Image.asset(
+                                  Provider.of<ThemeProvider>(context).isDarkMode
+                                    ? 'assets/prosumer/battery1.jpg'
+                                    : 'assets/prosumer/battery1.jpg',
+                                  height: 320,
+                                  fit: BoxFit.fitWidth,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 50,
+                                      width: 200,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Icon(
+                                        Icons.solar_power,
+                                        size: 60,
+                                        color: Colors.white54,
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: BatteryInfoScreen(),
+                            )
                           ],
                         )
                       ),

@@ -36,7 +36,7 @@ class _UsageStatsState extends State<UsageStats>
   late AnimationController _pulseController;
   late AnimationController _batteryDrainController;
   late AnimationController _sparkController;
-  bool _showDetails = false;
+  bool _showDetails = true;
 
   @override
   void initState() {
@@ -82,7 +82,7 @@ class _UsageStatsState extends State<UsageStats>
   String _getEnergySource() {
     if (widget.solarUsage > widget.gridImport) return 'Solar Power';
     if (widget.gridImport > 0) return 'Grid + Solar';
-    return 'Battery';
+    return 'Solar System';
   }
 
   @override
@@ -305,7 +305,7 @@ class _UsageStatsState extends State<UsageStats>
       
                   // Battery Status Section
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
@@ -340,7 +340,7 @@ class _UsageStatsState extends State<UsageStats>
                                       );
                                     },
                                   ),
-                                  const SizedBox(width: 10),
+                                  const SizedBox(width: 8),
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -458,121 +458,121 @@ class _UsageStatsState extends State<UsageStats>
                             value: '${widget.inverterOutput.toStringAsFixed(2)} kW',
                             color: const Color(0xFFff6b35),
                           ),
-                          const SizedBox(height: 10),
+                          // const SizedBox(height: 10),
                           
-                          // Grid import
-                          _buildStatRow(
-                            icon: Icons.cloud_download,
-                            label: 'Grid Import',
-                            value: '${widget.gridImport.toStringAsFixed(2)} kWh',
-                            color: const Color(0xFF9d4edd),
-                            showWarning: widget.gridImport > 0,
-                          ),
-                          const SizedBox(height: 10),
+                          // // Grid import
+                          // _buildStatRow(
+                          //   icon: Icons.cloud_download,
+                          //   label: 'Grid Import',
+                          //   value: '${widget.gridImport.toStringAsFixed(2)} kWh',
+                          //   color: const Color(0xFF9d4edd),
+                          //   showWarning: widget.gridImport > 0,
+                          // ),
+                          // const SizedBox(height: 10),
                           
-                          // Solar usage
-                          _buildStatRow(
-                            icon: Icons.wb_sunny,
-                            label: 'Solar Usage',
-                            value: '${widget.solarUsage.toStringAsFixed(2)} kWh',
-                            color: const Color(0xFFffd60a),
-                          ),
-                          const SizedBox(height: 10),
+                          // // Solar usage
+                          // _buildStatRow(
+                          //   icon: Icons.wb_sunny,
+                          //   label: 'Solar Usage',
+                          //   value: '${widget.solarUsage.toStringAsFixed(2)} kWh',
+                          //   color: const Color(0xFFffd60a),
+                          // ),
+                          // const SizedBox(height: 10),
                           
-                          // Peak consumption
-                          _buildStatRow(
-                            icon: Icons.trending_up,
-                            label: 'Peak Today',
-                            value: '${widget.peakConsumption.toStringAsFixed(2)} kW',
-                            color: const Color(0xFF06ffa5),
-                          ),
+                          // // Peak consumption
+                          // _buildStatRow(
+                          //   icon: Icons.trending_up,
+                          //   label: 'Peak Today',
+                          //   value: '${widget.peakConsumption.toStringAsFixed(2)} kW',
+                          //   color: const Color(0xFF06ffa5),
+                          // ),
                           
                           const SizedBox(height: 16),
                           
                           // Savings info
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  const Color(0xFF00ff88).withOpacity(0.1),
-                                  const Color(0xFF00d9ff).withOpacity(0.1),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: const Color(0xFF00ff88).withOpacity(0.3),
-                                width: 1,
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.savings,
-                                          color: const Color(0xFF00ff88),
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Saved Today',
-                                          style: TextStyle(
-                                            color: Colors.white.withOpacity(0.7),
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      '\$${widget.costSaved.toStringAsFixed(2)}',
-                                      style: const TextStyle(
-                                        color: Color(0xFF00ff88),
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.eco,
-                                          color: const Color(0xFF00d9ff),
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'CO₂ Offset',
-                                          style: TextStyle(
-                                            color: Colors.white.withOpacity(0.7),
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      '${widget.carbonOffset.toStringAsFixed(1)} kg',
-                                      style: const TextStyle(
-                                        color: Color(0xFF00d9ff),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                          // Container(
+                          //   padding: const EdgeInsets.all(12),
+                          //   decoration: BoxDecoration(
+                          //     gradient: LinearGradient(
+                          //       colors: [
+                          //         const Color(0xFF00ff88).withOpacity(0.1),
+                          //         const Color(0xFF00d9ff).withOpacity(0.1),
+                          //       ],
+                          //     ),
+                          //     borderRadius: BorderRadius.circular(12),
+                          //     border: Border.all(
+                          //       color: const Color(0xFF00ff88).withOpacity(0.3),
+                          //       width: 1,
+                          //     ),
+                          //   ),
+                          //   child: Column(
+                          //     children: [
+                          //       Row(
+                          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //         children: [
+                          //           Row(
+                          //             children: [
+                          //               Icon(
+                          //                 Icons.savings,
+                          //                 color: const Color(0xFF00ff88),
+                          //                 size: 16,
+                          //               ),
+                          //               const SizedBox(width: 8),
+                          //               Text(
+                          //                 'Saved Today',
+                          //                 style: TextStyle(
+                          //                   color: Colors.white.withOpacity(0.7),
+                          //                   fontSize: 11,
+                          //                   fontWeight: FontWeight.w500,
+                          //                 ),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //           Text(
+                          //             '\$${widget.costSaved.toStringAsFixed(2)}',
+                          //             style: const TextStyle(
+                          //               color: Color(0xFF00ff88),
+                          //               fontSize: 16,
+                          //               fontWeight: FontWeight.w700,
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                                // const SizedBox(height: 8),
+                                // Row(
+                                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                //   children: [
+                                //     Row(
+                                //       children: [
+                                //         Icon(
+                                //           Icons.eco,
+                                //           color: const Color(0xFF00d9ff),
+                                //           size: 16,
+                                //         ),
+                                //         const SizedBox(width: 8),
+                                //         Text(
+                                //           'CO₂ Offset',
+                                //           style: TextStyle(
+                                //             color: Colors.white.withOpacity(0.7),
+                                //             fontSize: 11,
+                                //             fontWeight: FontWeight.w500,
+                                //           ),
+                                //         ),
+                                //       ],
+                                //     ),
+                                    // Text(
+                                    //   '${widget.carbonOffset.toStringAsFixed(1)} kg',
+                                    //   style: const TextStyle(
+                                    //     color: Color(0xFF00d9ff),
+                                    //     fontSize: 14,
+                                    //     fontWeight: FontWeight.w700,
+                                    //   ),
+                                    // ),
+                                //   ],
+                                // ),
+                          //     ],
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),

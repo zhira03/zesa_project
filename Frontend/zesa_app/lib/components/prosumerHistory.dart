@@ -12,45 +12,17 @@ class _TransactionHistoryState extends State<TransactionHistory> {
   
 // Helper method to build data rows (add this outside the build method)
 DataRow buildDataRow({
-  required String id,
   required String customer,
   required String date,
   required String status,
   required String amount,
-  required Color statusColor,
 }) {
   return DataRow(
     cells: [
       DataCell(
         Text(
-          id,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-      DataCell(
-        Row(
-          children: [
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.blue[100],
-              child: Text(
-                customer[0],
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue[900],
-                ),
-              ),
-            ),
-            SizedBox(width: 8),
-            Text(
-              customer,
-              style: TextStyle(fontSize: 13),
-            ),
-          ],
+          customer,
+          style: TextStyle(fontSize: 13),
         ),
       ),
       DataCell(
@@ -63,24 +35,6 @@ DataRow buildDataRow({
               style: TextStyle(fontSize: 12),
             ),
           ],
-        ),
-      ),
-      DataCell(
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: statusColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: statusColor.withOpacity(0.3)),
-          ),
-          child: Text(
-            status,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: statusColor,
-            ),
-          ),
         ),
       ),
       DataCell(
@@ -134,25 +88,6 @@ DataRow buildDataRow({
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Recent Sales',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.filter_list, size: 20),
-                onPressed: () {},
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
           // Table
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -169,16 +104,6 @@ DataRow buildDataRow({
                 (states) => Colors.blue[50],
               ),
               columns: [
-                DataColumn(
-                  label: Text(
-                    'ID',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: Colors.blue[900],
-                    ),
-                  ),
-                ),
                 DataColumn(
                   label: Text(
                     'Customer',
@@ -220,41 +145,25 @@ DataRow buildDataRow({
                   ),
                   numeric: true,
                 ),
-                DataColumn(
-                  label: Text(
-                    'Action',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: Colors.blue[900],
-                    ),
-                  ),
-                ),
               ],
               rows: [
                 buildDataRow(
-                  id: '001',
                   customer: 'John Doe',
-                  date: '2024-06-10',
+                  date: '10 Jul',
                   status: 'Completed',
                   amount: '\$100',
-                  statusColor: Colors.green,
                 ),
                 buildDataRow(
-                  id: '002',
                   customer: 'Jane Smith',
-                  date: '2024-06-09',
+                  date: '12 Jul',
                   status: 'Pending',
                   amount: '\$75',
-                  statusColor: Colors.orange,
                 ),
                 buildDataRow(
-                  id: '003',
                   customer: 'Mike Johnson',
-                  date: '2024-06-08',
+                  date: '18 Jul',
                   status: 'Completed',
                   amount: '\$150',
-                  statusColor: Colors.green,
                 ),
               ],
             ),

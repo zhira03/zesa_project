@@ -115,6 +115,7 @@ class UserSystem(Base):
     inverter_capacity_kw = Column(Float, nullable=True)
     system_type = Column(Enum(SystemType), default=SystemType.HYBRID)
     installed_date = Column(DateTime, nullable=True)
+    is_available = Column(Boolean, default = True, nullable = False)
     #number of people in the house using the system
     household_size = Column(Integer, nullable=True)
     energy_data = relationship("EnergyData", back_populates="user_system")

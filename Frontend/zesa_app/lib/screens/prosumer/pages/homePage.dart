@@ -4,6 +4,7 @@ import 'package:WattTrade/components/prosumerGeneration.dart';
 import 'package:WattTrade/components/prosumerHistory.dart';
 import 'package:WattTrade/components/prosumerSystem.dart';
 import 'package:WattTrade/components/themes.dart';
+import 'package:WattTrade/components/transHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -212,10 +213,26 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(2.0),
               child: Column(
                 children: [
-                  Text("Stats"),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical:8, horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text("Energy OverView",
+                          style: GoogleFonts.zenDots(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Provider.of<ThemeProvider>(context).isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   SizedBox(
                     height: 350,
                     child: ListView(
@@ -223,17 +240,18 @@ class _HomePageState extends State<HomePage> {
                       physics: AlwaysScrollableScrollPhysics(),
                       children: [
                         GenerationStats(
-                          generatedkWh: 100, 
+                          generatedkWh: 75, 
                           panelCount: 5, 
                           panelSize: 585, 
                           batteryCapacity: 48,
                           inverterCapacity: 6000, 
                           exportingToGrid: 500,
+                          efficiency: 92,
                         ),
                         SizedBox(width: 10,),
                         UsageStats(
                           currentConsumption: 23, 
-                          batteryPercentage: 85, 
+                          batteryPercentage: 92, 
                           batteryCapacity: 48, 
                           inverterOutput: 300,
                         ),
@@ -244,10 +262,51 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 30),
-            Text("System Rating"),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical:8, horizontal: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text("Solar System Specs",
+                    style: GoogleFonts.zenDots(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Provider.of<ThemeProvider>(context).isDarkMode
+                        ? Colors.white
+                        : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             SystemStats(),
             const SizedBox(height: 30),
-            TransactionHistory(),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical:8, horizontal: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text("Recent Transactions",
+                    style: GoogleFonts.zenDots(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Provider.of<ThemeProvider>(context).isDarkMode
+                        ? Colors.white
+                        : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // TransactionHistory(),
+            SizedBox(
+              height: 470,
+              width: double.infinity,
+              child: Expanded(
+                child: TransactionsScreen()
+              )
+            ),
+
             //show solar system info if its a prosumer
             SizedBox(
               height: 200,
