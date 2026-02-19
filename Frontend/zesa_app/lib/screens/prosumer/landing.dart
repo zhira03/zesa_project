@@ -1,12 +1,13 @@
 import 'package:WattTrade/components/themes.dart';
 import 'package:WattTrade/screens/prosumer/pages/accountPage.dart';
 import 'package:WattTrade/screens/prosumer/pages/homePage.dart';
-import 'package:WattTrade/screens/prosumer/pages/settingsPage.dart';
+import 'package:WattTrade/screens/prosumer/pages/reportsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({super.key});
+  final String userRole;
+  const LandingPage({super.key,required this.userRole});
 
   @override
   State<LandingPage> createState() => _LandingPageState();

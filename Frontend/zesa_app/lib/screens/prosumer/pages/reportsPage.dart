@@ -1,6 +1,7 @@
+import 'package:WattTrade/components/animatedAppBar.dart';
 import 'package:WattTrade/components/barGraph.dart';
-import 'package:WattTrade/components/pieChart.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:WattTrade/components/transHelper.dart';
+import 'package:WattTrade/components/walletHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -33,8 +34,8 @@ class _ReportsPageState extends State<ReportsPage> {
 
   // Monthly data - 30/31 days
   final List<double> monthlyData = [
-    45.2, 48.5, 52.3, 49.8, 55.6, 58.2, 60.5, 62.8, 59.3, 61.5,
-    63.2, 65.8
+    45.2, 48.5, 52.3, 49.8, 0, 0, 0, 0, 0.0, 0.0,
+    0.0, 0.0
   ];
 
   // Yearly data - 12 months
@@ -42,7 +43,7 @@ class _ReportsPageState extends State<ReportsPage> {
     400, // 2 years ago
     500, // last year
     325, // currently
-    845, // next year (projection)
+    115, // next year (projection)
     0 // 2 years from now
   ];
 
@@ -50,33 +51,16 @@ class _ReportsPageState extends State<ReportsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Reports Page"),
-        automaticallyImplyLeading: false,
-      ),
+      backgroundColor: const Color(0xFF0F1923),
+      appBar: AnimatedThemedAppBar(title: 'Reports',),
       body: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Last Updated: 3s ago"),
             SizedBox(
-              // height: 300,
+              height: 500,
               width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ProgressStatsWidget(
-                    overallPercentage: 65, 
-                    categories: {
-                      "Produced": 80,
-                      "Consumed": 50,
-                      "Excess": 70,
-                    },
-                  )
-                ],
-              ),
+              child: WalletScreen()
             ),
             const SizedBox(height: 10),
             Padding(
@@ -156,7 +140,7 @@ class _ReportsPageState extends State<ReportsPage> {
                     ),
                   ),
                   Align(
-                    alignment: Alignment.bottomLeft,
+                    alignment: Alignment(0, 0.1),
                     child: SmoothPageIndicator(
                       controller: _controller, 
                       count: 3,
@@ -166,12 +150,14 @@ class _ReportsPageState extends State<ReportsPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 50),
-            Container(
-              height: 200,
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 470,
               width: double.infinity,
-              color: Colors.red,
-            )
+              child: Expanded(
+                child: TransactionsScreen()
+              )
+            ),
           ],
         ),
       ),

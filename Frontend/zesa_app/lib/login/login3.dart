@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       
       if (mounted) {
         _showSuccessMessage(_isLogin ? 'Welcome back!' : 'Account created successfully!');
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LandingPage()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LandingPage(userRole: "Prosumer",)));
       }
     }
   }

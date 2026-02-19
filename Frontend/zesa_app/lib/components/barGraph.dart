@@ -16,7 +16,7 @@ class EnergyChart extends StatefulWidget {
     Key? key,
     required this.energyGenerated,
     required this.hourlyData,
-    this.selectedPeriod = 'Day',
+    this.selectedPeriod = 'Hour',
     required this.onPeriodChanged, 
     required this.title, 
     required this.icon, 
@@ -170,36 +170,49 @@ class BarChartPainter extends CustomPainter {
   });
 
   List<String> _getTimeLabels() {
-  switch (selectedPeriod) {
-    case 'Hour':
-      return ['00:00', '06:00', '12:00', '18:00'];
-    
-    case 'Day':
-      return ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    
-    case 'Month':
-      return ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'];
-    
-    case 'Year':
-      final currentYear = DateTime.now().year;
-      return [
-        '${currentYear - 2}',
-        '${currentYear - 1}',
-        '$currentYear',
-        '${currentYear + 1}',
-        '${currentYear + 2}',
-      ];
-    
-    default:
-      return ['00:00', '06:00', '12:00', '18:00'];
+    switch (selectedPeriod) {
+      case 'Hour':
+        return ['00:00', '06:00', '12:00', '18:00'];
+      
+      case 'Day':
+        return ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      
+      case 'Month':
+        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      
+      case 'Year':
+        final currentYear = DateTime.now().year;
+        return [
+          '${currentYear - 2}',
+          '${currentYear - 1}',
+          '$currentYear',
+          '${currentYear + 1}',
+          '${currentYear + 2}',
+        ];
+      
+      default:
+        return ['00:00', '06:00', '12:00', '18:00'];
+    }
   }
-}
+
+  List<int> _getLabelPositions(int dataLength, int labelCount) {
+    if (labelCount == 0) return [];
+    if (labelCount == 1) return [dataLength ~/ 2];
+    
+    return List.generate(labelCount, (i) {
+      return (i * (dataLength - 1) / (labelCount - 1)).round();
+    });
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
-    final barWidth = (size.width / data.length).clamp(2.0, 20.0);
+    final timeLabels = _getTimeLabels();
+    final labelCount = timeLabels.length;
+    
+    // Use label count to determine bar distribution
+    final barCount = labelCount;
+    final barWidth = (size.width / barCount);
     final actualBarWidth = barWidth * 0.6;
-    final barSpacing = barWidth - actualBarWidth;
     
     // Draw horizontal grid lines
     final gridPaint = Paint()
@@ -234,16 +247,16 @@ class BarChartPainter extends CustomPainter {
       );
     }
     
-    // Draw bars
+    // Draw bars - use the actual data length but distribute across full canvas
     final effectiveMaxValue = data.reduce((a, b) => a > b ? a : b) < maxValue
         ? maxValue
         : data.reduce((a, b) => a > b ? a : b);
-    final topPadding = 10.0;
-    final bottomPadding = 20.0;
+    final topPadding = 1.0;
+    final bottomPadding = 2.0;
 
-    for (int i = 0; i < data.length; i++) {
+    for (int i = 0; i < data.length && i < barCount; i++) {
       final barHeight = (data[i] / effectiveMaxValue) * (size.height - topPadding - bottomPadding);
-      final x = i * barWidth + barSpacing / 2;
+      final x = i * barWidth + barWidth / 2 - actualBarWidth / 2;
       final y = size.height - barHeight - bottomPadding;
 
       final gradient = LinearGradient(
@@ -265,15 +278,11 @@ class BarChartPainter extends CustomPainter {
       canvas.drawRRect(rrect, paint);
     }
     
-    // Draw time labels
-    final timeLabels = _getTimeLabels();
-    final labelCount = timeLabels.length;
+    // Draw time labels - now aligned with bars
+    debugPrint("Time labels: $timeLabels, dataLength: ${data.length}");
 
-  // Generate positions dynamically
-    final timePositions = List.generate(labelCount, (i) {
-      // Spread them evenly across the data indices
-      return (i * (data.length - 1) / (labelCount - 1)).round();
-    });
+    double lastX = -double.infinity;
+    const minLabelSpacing = 40.0; // Minimum pixels between labels
 
     for (int i = 0; i < labelCount; i++) {
       final textPainter = TextPainter(
@@ -288,9 +297,14 @@ class BarChartPainter extends CustomPainter {
       );
       textPainter.layout();
 
-      final x = timePositions[i] * barWidth + actualBarWidth / 2 - textPainter.width / 2;
-
-      textPainter.paint(canvas, Offset(x, size.height + 8));
+      // Position labels at the center of each bar
+      final x = i * barWidth + barWidth / 2 - textPainter.width / 2;
+      
+      // Only draw label if there's enough space from the previous one
+      if (x - lastX >= minLabelSpacing || i == 0) {
+        textPainter.paint(canvas, Offset(x, size.height + 8));
+        lastX = x + textPainter.width;
+      }
     }
   }
   
