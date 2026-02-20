@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class QuickActionTile extends StatelessWidget {
   final IconData icon;
   final String text;
-  final String routePath;
+  final Widget routeWidget;
   final Color? backgroundColor;
   final Color? textColor;
   final Color? iconColor;
@@ -12,7 +12,7 @@ class QuickActionTile extends StatelessWidget {
     Key? key,
     required this.icon,
     required this.text,
-    required this.routePath,
+    required this.routeWidget,
     this.backgroundColor,
     this.textColor,
     this.iconColor,
@@ -29,7 +29,10 @@ class QuickActionTile extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            Navigator.pushNamed(context, routePath);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => routeWidget),
+            );
           },
           borderRadius: BorderRadius.circular(8),
           child: Padding(

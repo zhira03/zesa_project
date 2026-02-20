@@ -3,6 +3,7 @@ import 'package:WattTrade/components/animatedAppBar.dart';
 import 'package:WattTrade/components/animatedLogout.dart';
 import 'package:WattTrade/components/modeSlider.dart';
 import 'package:WattTrade/components/themes.dart';
+import 'package:WattTrade/screens/prosumer/pages/updateSystem.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -97,25 +98,25 @@ class _AccountPageState extends State<AccountPage> {
                     QuickActionTile(
                       icon: FluentIcons.person_info_20_regular,
                       text: "Personal Details",
-                      routePath: '/',
+                      routeWidget: AccountPage(),
                     ),
                     const SizedBox(height: 10),
                     QuickActionTile(
                       icon: FluentIcons.weather_sunny_32_filled,
                       text: "Solar System Info",
-                      routePath: '/',
+                      routeWidget: SystemUpdate(panelCount: 2, panelSize: 550, panelType: "Monocrystalline", batteryCount: 2, batteryCapacity: 100, batteryType: "Lithium-ion", inverterCount: 1, inverterCapacity: 5000, inverterType: "Pure Sine Wave"),
                     ),
                     const SizedBox(height: 10),
                     QuickActionTile(
                       icon: Icons.messenger,
                       text: "Messages",
-                      routePath: '/',
+                      routeWidget: AccountPage(),
                     ),
                     const SizedBox(height: 10),
                     QuickActionTile(
                       icon: Icons.notifications,
                       text: "Notifications",
-                      routePath: '/',
+                      routeWidget: AccountPage(),
                     ),
                   ],
                 ),
@@ -147,7 +148,7 @@ class _AccountPageState extends State<AccountPage> {
                       QuickActionTile(
                         icon: FluentIcons.map_16_filled, 
                         text: "Update Location", 
-                        routePath: '/'
+                        routeWidget: AccountPage(),
                       ),
                       const SizedBox(height: 20),
                       Text("App Info",
@@ -160,7 +161,7 @@ class _AccountPageState extends State<AccountPage> {
                       QuickActionTile(
                         icon: FluentIcons.info_shield_20_filled, 
                         text: "About Us", 
-                        routePath: ""
+                        routeWidget: AccountPage(),
                       ),
                       const SizedBox(height: 10),
                       Padding(

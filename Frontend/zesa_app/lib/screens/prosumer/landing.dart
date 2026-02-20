@@ -1,6 +1,7 @@
 import 'package:WattTrade/components/themes.dart';
 import 'package:WattTrade/screens/prosumer/pages/accountPage.dart';
 import 'package:WattTrade/screens/prosumer/pages/homePage.dart';
+import 'package:WattTrade/screens/prosumer/pages/marketPlace.dart';
 import 'package:WattTrade/screens/prosumer/pages/reportsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class _LandingPageState extends State<LandingPage> {
   int _selectedIndex = 0;
   final List <Widget> _pages = [
     HomePage(),
+    Marketplace(),
     ReportsPage(),
     AccountPage(),
   ];
@@ -58,6 +60,7 @@ class _LandingPageState extends State<LandingPage> {
                     : Colors.black,
                   items: const [
                     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+                    BottomNavigationBarItem(icon: Icon(Icons.shopping_basket), label: "Market"),
                     BottomNavigationBarItem(icon: Icon(Icons.edit_document), label: "Report"),
                     BottomNavigationBarItem(icon: Icon(Icons.account_box), label: "Account"),
                   ],

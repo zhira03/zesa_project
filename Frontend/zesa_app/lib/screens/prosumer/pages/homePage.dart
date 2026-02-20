@@ -265,7 +265,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical:8, horizontal: 5),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("Solar System Specs",
                     style: GoogleFonts.zenDots(
@@ -274,6 +274,16 @@ class _HomePageState extends State<HomePage> {
                       color: Provider.of<ThemeProvider>(context).isDarkMode
                         ? Colors.white
                         : Colors.black,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      //push to the Update System Page
+                    },
+                    child: const Icon(
+                      Icons.info_outline_rounded,
+                      color: Color(0xFFF59E0B),
+                      size: 15,
                     ),
                   ),
                 ],
