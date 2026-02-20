@@ -61,8 +61,8 @@ class _LandingPageState extends State<LandingPage> {
                   items: const [
                     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
                     BottomNavigationBarItem(icon: Icon(Icons.shopping_basket), label: "Market"),
-                    BottomNavigationBarItem(icon: Icon(Icons.edit_document), label: "Report"),
-                    BottomNavigationBarItem(icon: Icon(Icons.account_box), label: "Account"),
+                    BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Report"),
+                    BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "Account"),
                   ],
                 ),
               ),

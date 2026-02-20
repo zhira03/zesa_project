@@ -1,4 +1,5 @@
 import 'package:WattTrade/components/animatedAppBar.dart';
+import 'package:WattTrade/components/energyListingHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,24 +11,37 @@ class Marketplace extends StatefulWidget {
 }
 
 class _MarketplaceState extends State<Marketplace> {
+  int _availableListings = 5;
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AnimatedThemedAppBar(
-          title:'MarketPlace'
+    return Scaffold(
+      appBar: AnimatedThemedAppBar(
+        title:'MarketPlace'
+      ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+          decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF1a1a2e),
+              const Color(0xFF16213e),
+              const Color(0xFF0f3460),
+            ],
+          ),
         ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
           child: Column(
             children: [
-
+          
               // search bar section
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E1E1E),
+                  color: const Color.fromARGB(255, 26, 35, 50),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
@@ -47,13 +61,13 @@ class _MarketplaceState extends State<Marketplace> {
                   ]
                 )
               ),
-
+          
               // ave price, kwh available and active users bar
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E1E1E),
+                  color: const Color.fromARGB(255, 26, 35, 50),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
@@ -82,11 +96,92 @@ class _MarketplaceState extends State<Marketplace> {
                     )
                   ]
                 )
-              )
+              ),
+          
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Available Listings", 
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                      )
+                    ),
+                    Text("${_availableListings.toString()} results",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold
+                      )
+                    ),
+                  ],
+                ),
+              ),
+    
+              //energy listing cards
+              EnergyListingCard(
+                sellerName: "SolarTech Inc.",
+                location: "Nairobi, Kenya",
+                distanceKm: 12.5,
+                rating: 4.8,
+                availableKwh: 1500.0,
+                pricePerKwh: 0.12,
+                onBuyPressed: () {
+                  debugPrint("Buy pressed");
+                },
+                onMessagePressed: () {
+                  debugPrint("Message pressed");
+                },
+              ),
+              EnergyListingCard(
+                sellerName: "SolarTech Inc.",
+                location: "Nairobi, Kenya",
+                distanceKm: 12.5,
+                rating: 4.8,
+                availableKwh: 1500.0,
+                pricePerKwh: 0.12,
+                onBuyPressed: () {
+                  debugPrint("Buy pressed");
+                },
+                onMessagePressed: () {
+                  debugPrint("Message pressed");
+                },
+              ),
+              EnergyListingCard(
+                sellerName: "SolarTech Inc.",
+                location: "Nairobi, Kenya",
+                distanceKm: 12.5,
+                rating: 4.8,
+                availableKwh: 1500.0,
+                pricePerKwh: 0.12,
+                onBuyPressed: () {
+                  debugPrint("Buy pressed");
+                },
+                onMessagePressed: () {
+                  debugPrint("Message pressed");
+                },
+              ),
+              EnergyListingCard(
+                sellerName: "SolarTech Inc.",
+                location: "Nairobi, Kenya",
+                distanceKm: 12.5,
+                rating: 4.8,
+                availableKwh: 1500.0,
+                pricePerKwh: 0.12,
+                onBuyPressed: () {
+                  debugPrint("Buy pressed");
+                },
+                onMessagePressed: () {
+                  debugPrint("Message pressed");
+                },
+              ),
             ],
           ),
         ),
-      )
+      ),
     );
   }
 }
